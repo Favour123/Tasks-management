@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Progress - Task Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        'primary-dark': '#2563EB',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
+                        </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <a href="my_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                My Tasks
+                            </a>
+                            <a href="update_progress.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Update Progress
+                            </a>
+                            <a href="filter_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Filter Tasks
+                            </a>
+                            <a href="activity_logs.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Activity Logs
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                        <div class="ml-3 relative">
+                            <div class="flex items-center">
+                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
+                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="taskTitle">
+                            Loading task...
+                        </h3>
+                        <p class="mt-1 max-w-2xl text-sm text-gray-500" id="taskDescription">
+                            Loading description...
+                        </p>
+                    </div>
+                    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+                        <form id="updateProgressForm" class="space-y-6">
+                            <div>
+                                <label for="status" class="block text-sm font-medium text-gray-700">
+                                    Status
+                                </label>
+                                <select id="status" name="status" required
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                    <option value="pending">Pending</option>
+                                    <option value="in_progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="progress" class="block text-sm font-medium text-gray-700">
+                                    Progress (%)
+                                </label>
+                                <input type="number" name="progress" id="progress" min="0" max="100" required
+                                    class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
+
+                            <div>
+                                <label for="comments" class="block text-sm font-medium text-gray-700">
+                                    Comments
+                                </label>
+                                <textarea id="comments" name="comments" rows="3"
+                                    class="mt-1 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit"
+                                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Update Progress
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'your_supabase_url_here';
+        const supabaseAnonKey = 'your_supabase_anon_key_here';
+        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // Get task ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const taskId = urlParams.get('id');
+
+        // Check authentication and load task
+        async function initializePage() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (error || !session) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Get user profile
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('name, role')
+                .eq('id', session.user.id)
+                .single();
+                
+            if (profileError || profile.role !== 'employee') {
+                window.location.href = '/dashboard.html';
+                return;
+            }
+            
+            // Set user name
+            document.getElementById('userName').textContent = profile.name;
+            
+            // Load task if ID is provided
+            if (taskId) {
+                loadTask(taskId);
+            } else {
+                window.location.href = 'my_tasks.html';
+            }
+        }
+
+        // Load task details
+        async function loadTask(taskId) {
+            const { data: task, error } = await supabase
+                .from('tasks')
+                .select(`
+                    id,
+                    title,
+                    description,
+                    status,
+                    progress,
+                    assigned_to
+                `)
+                .eq('id', taskId)
+                .single();
+                
+            if (error) {
+                console.error('Error loading task:', error);
+                alert('Error loading task. Please try again.');
+                window.location.href = 'my_tasks.html';
+                return;
+            }
+            
+            // Check if task is assigned to current user
+            const { data: { session } } = await supabase.auth.getSession();
+            if (task.assigned_to !== session.user.id) {
+                alert('You are not authorized to update this task.');
+                window.location.href = 'my_tasks.html';
+                return;
+            }
+            
+            // Populate form with task data
+            document.getElementById('taskTitle').textContent = task.title;
+            document.getElementById('taskDescription').textContent = task.description;
+            document.getElementById('status').value = task.status;
+            document.getElementById('progress').value = task.progress;
+        }
+
+        // Handle form submission
+        document.getElementById('updateProgressForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const status = document.getElementById('status').value;
+            const progress = parseInt(document.getElementById('progress').value);
+            const comments = document.getElementById('comments').value;
+            
+            try {
+                // Update task progress
+                const { error: updateError } = await supabase
+                    .from('tasks')
+                    .update({
+                        status,
+                        progress,
+                        updated_at: new Date()
+                    })
+                    .eq('id', taskId);
+                    
+                if (updateError) throw updateError;
+                
+                // Log activity
+                const { error: logError } = await supabase
+                    .from('activity_logs')
+                    .insert([
+                        {
+                            task_id: taskId,
+                            user_id: (await supabase.auth.getSession()).data.session.user.id,
+                            action: 'update_progress',
+                            details: `Updated progress to ${progress}% and status to ${status}. ${comments ? 'Comments: ' + comments : ''}`,
+                            created_at: new Date()
+                        }
+                    ]);
+                    
+                if (logError) throw logError;
+                
+                alert('Progress updated successfully!');
+                window.location.href = 'my_tasks.html';
+            } catch (error) {
+                console.error('Error updating progress:', error);
+                alert('Error updating progress. Please try again.');
+            }
+        });
+
+        // Initialize page
+        initializePage();
+    </script>
+</body>
+</html> 

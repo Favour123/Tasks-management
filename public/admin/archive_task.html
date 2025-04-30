@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive Task - Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        'primary-dark': '#2563EB',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
+                        </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <a href="view_all_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                All Tasks
+                            </a>
+                            <a href="assign_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Assign Task
+                            </a>
+                            <a href="create_category.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Create Category
+                            </a>
+                            <a href="export_report.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Export Report
+                            </a>
+                            <a href="archive_task.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Archive Task
+                            </a>
+                            <a href="activity_logs.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Activity Logs
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                        <div class="ml-3 relative">
+                            <div class="flex items-center">
+                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
+                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Archive Task
+                        </h3>
+                    </div>
+                    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+                        <form id="archiveTaskForm" class="space-y-6">
+                            <div>
+                                <label for="taskId" class="block text-sm font-medium text-gray-700">
+                                    Task
+                                </label>
+                                <select id="taskId" name="taskId" required
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                    <option value="">Select Task</option>
+                                    <!-- Tasks will be loaded here -->
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="archiveReason" class="block text-sm font-medium text-gray-700">
+                                    Archive Reason
+                                </label>
+                                <textarea id="archiveReason" name="archiveReason" rows="3" required
+                                    class="mt-1 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit"
+                                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Archive Task
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Archived Tasks -->
+                <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Archived Tasks
+                        </h3>
+                    </div>
+                    <div class="border-t border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Task
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Assigned To
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Archived By
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Archive Date
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Reason
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="archivedTasksTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Archived tasks will be loaded here -->
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                        Loading archived tasks...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'your_supabase_url_here';
+        const supabaseAnonKey = 'your_supabase_anon_key_here';
+        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // Check authentication and load data
+        async function initializePage() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (error || !session) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Get user profile
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('name, role')
+                .eq('id', session.user.id)
+                .single();
+                
+            if (profileError || profile.role !== 'admin') {
+                window.location.href = '/dashboard.html';
+                return;
+            }
+            
+            // Set user name
+            document.getElementById('userName').textContent = profile.name;
+            
+            // Load tasks and archived tasks
+            loadTasks();
+            loadArchivedTasks();
+        }
+
+        // Load tasks for dropdown
+        async function loadTasks() {
+            const { data: tasks, error } = await supabase
+                .from('tasks')
+                .select(`
+                    id,
+                    title,
+                    status
+                `)
+                .eq('archived', false)
+                .order('title');
+                
+            if (error) {
+                console.error('Error loading tasks:', error);
+                return;
+            }
+            
+            // Add tasks to dropdown
+            const taskSelect = document.getElementById('taskId');
+            const taskOptions = tasks.map(task => 
+                `<option value="${task.id}">${task.title} (${formatStatus(task.status)})</option>`
+            ).join('');
+            
+            taskSelect.innerHTML += taskOptions;
+        }
+
+        // Load archived tasks
+        async function loadArchivedTasks() {
+            const { data: archivedTasks, error } = await supabase
+                .from('tasks')
+                .select(`
+                    id,
+                    title,
+                    archive_reason,
+                    archive_date,
+                    archived_by,
+                    profiles:assigned_to (
+                        name
+                    ),
+                    archived_by_profile:archived_by (
+                        name
+                    )
+                `)
+                .eq('archived', true)
+                .order('archive_date', { ascending: false });
+                
+            if (error) {
+                console.error('Error loading archived tasks:', error);
+                document.getElementById('archivedTasksTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-red-500">
+                            Error loading archived tasks. Please try again.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            if (archivedTasks.length === 0) {
+                document.getElementById('archivedTasksTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                            No archived tasks found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Render archived tasks
+            const archivedTasksHTML = archivedTasks.map(task => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${task.title}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${task.profiles?.name || 'Unassigned'}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${task.archived_by_profile?.name || 'Unknown'}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${formatDate(task.archive_date)}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-500">${task.archive_reason || 'No reason provided'}</div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('archivedTasksTableBody').innerHTML = archivedTasksHTML;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+
+        // Format status
+        function formatStatus(status) {
+            if (!status) return 'Unknown';
+            return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+        }
+
+        // Handle form submission
+        document.getElementById('archiveTaskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const taskId = document.getElementById('taskId').value;
+            const archiveReason = document.getElementById('archiveReason').value;
+            
+            if (!taskId) {
+                alert('Please select a task to archive.');
+                return;
+            }
+            
+            try {
+                // Get current user
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                // Archive task
+                const { error: archiveError } = await supabase
+                    .from('tasks')
+                    .update({
+                        archived: true,
+                        archive_reason: archiveReason,
+                        archive_date: new Date(),
+                        archived_by: session.user.id
+                    })
+                    .eq('id', taskId);
+                    
+                if (archiveError) throw archiveError;
+                
+                // Log activity
+                const { error: logError } = await supabase
+                    .from('activity_logs')
+                    .insert([
+                        {
+                            task_id: taskId,
+                            user_id: session.user.id,
+                            action: 'archive_task',
+                            details: `Archived task. Reason: ${archiveReason}`,
+                            created_at: new Date()
+                        }
+                    ]);
+                    
+                if (logError) throw logError;
+                
+                alert('Task archived successfully!');
+                document.getElementById('archiveTaskForm').reset();
+                loadTasks();
+                loadArchivedTasks();
+            } catch (error) {
+                console.error('Error archiving task:', error);
+                alert('Error archiving task. Please try again.');
+            }
+        });
+
+        // Initialize page
+        initializePage();
+    </script>
+</body>
+</html> 

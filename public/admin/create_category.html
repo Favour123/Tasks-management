@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Category - Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        'primary-dark': '#2563EB',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
+                        </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <a href="view_all_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                All Tasks
+                            </a>
+                            <a href="assign_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Assign Task
+                            </a>
+                            <a href="create_category.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Create Category
+                            </a>
+                            <a href="export_report.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Export Report
+                            </a>
+                            <a href="archive_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Archive Task
+                            </a>
+                            <a href="activity_logs.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Activity Logs
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                        <div class="ml-3 relative">
+                            <div class="flex items-center">
+                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
+                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Create Category
+                        </h3>
+                    </div>
+                    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+                        <form id="createCategoryForm" class="space-y-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700">
+                                    Category Name
+                                </label>
+                                <input type="text" name="name" id="name" required
+                                    class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
+
+                            <div>
+                                <label for="description" class="block text-sm font-medium text-gray-700">
+                                    Description
+                                </label>
+                                <textarea id="description" name="description" rows="3"
+                                    class="mt-1 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit"
+                                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Create Category
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Existing Categories -->
+                <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Existing Categories
+                        </h3>
+                    </div>
+                    <div class="border-t border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Name
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Description
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Created At
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="categoriesTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Categories will be loaded here -->
+                                <tr>
+                                    <td colspan="3" class="px-6 py-4 text-center text-gray-500">
+                                        Loading categories...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'your_supabase_url_here';
+        const supabaseAnonKey = 'your_supabase_anon_key_here';
+        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // Check authentication and load data
+        async function initializePage() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (error || !session) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Get user profile
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('name, role')
+                .eq('id', session.user.id)
+                .single();
+                
+            if (profileError || profile.role !== 'admin') {
+                window.location.href = '/dashboard.html';
+                return;
+            }
+            
+            // Set user name
+            document.getElementById('userName').textContent = profile.name;
+            
+            // Load existing categories
+            loadCategories();
+        }
+
+        // Load categories
+        async function loadCategories() {
+            const { data: categories, error } = await supabase
+                .from('categories')
+                .select('*')
+                .order('created_at', { ascending: false });
+                
+            if (error) {
+                console.error('Error loading categories:', error);
+                document.getElementById('categoriesTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="3" class="px-6 py-4 text-center text-red-500">
+                            Error loading categories. Please try again.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            if (categories.length === 0) {
+                document.getElementById('categoriesTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="3" class="px-6 py-4 text-center text-gray-500">
+                            No categories found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Render categories
+            const categoriesHTML = categories.map(category => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${category.name}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-500">${category.description || 'No description'}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${formatDate(category.created_at)}</div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('categoriesTableBody').innerHTML = categoriesHTML;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+
+        // Handle form submission
+        document.getElementById('createCategoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const description = document.getElementById('description').value;
+            
+            try {
+                // Create category
+                const { data: category, error: categoryError } = await supabase
+                    .from('categories')
+                    .insert([
+                        {
+                            name,
+                            description,
+                            created_at: new Date()
+                        }
+                    ])
+                    .select()
+                    .single();
+                    
+                if (categoryError) throw categoryError;
+                
+                // Log activity
+                const { error: logError } = await supabase
+                    .from('activity_logs')
+                    .insert([
+                        {
+                            user_id: (await supabase.auth.getSession()).data.session.user.id,
+                            action: 'create_category',
+                            details: `Created new category "${name}".`,
+                            created_at: new Date()
+                        }
+                    ]);
+                    
+                if (logError) throw logError;
+                
+                alert('Category created successfully!');
+                document.getElementById('createCategoryForm').reset();
+                loadCategories();
+            } catch (error) {
+                console.error('Error creating category:', error);
+                alert('Error creating category. Please try again.');
+            }
+        });
+
+        // Initialize page
+        initializePage();
+    </script>
+</body>
+</html> 

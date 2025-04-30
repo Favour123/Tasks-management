@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        'primary-dark': '#2563EB',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="min-h-screen flex items-center justify-center">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">Task Manager</h1>
+            <p class="text-gray-600">Redirecting to dashboard...</p>
+        </div>
+    </div>
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'your_supabase_url_here';
+        const supabaseAnonKey = 'your_supabase_anon_key_here';
+        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // Check if user is logged in
+        async function checkSession() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (session) {
+                window.location.href = '/dashboard.html';
+            } else {
+                window.location.href = '/login.html';
+            }
+        }
+
+        checkSession();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Tasks - Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        'primary-dark': '#2563EB',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
+                        </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <a href="my_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                My Tasks
+                            </a>
+                            <a href="update_progress.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Update Progress
+                            </a>
+                            <a href="filter_tasks.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Filter Tasks
+                            </a>
+                            <a href="activity_logs.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Activity Logs
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                        <div class="ml-3 relative">
+                            <div class="flex items-center">
+                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
+                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Filter Tasks
+                        </h3>
+                    </div>
+                    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+                        <form id="filterForm" class="space-y-6">
+                            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                <div>
+                                    <label for="status" class="block text-sm font-medium text-gray-700">
+                                        Status
+                                    </label>
+                                    <select id="status" name="status"
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                        <option value="">All Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="completed">Completed</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="category" class="block text-sm font-medium text-gray-700">
+                                        Category
+                                    </label>
+                                    <select id="category" name="category"
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                        <option value="">All Categories</option>
+                                        <!-- Categories will be loaded here -->
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="dueDate" class="block text-sm font-medium text-gray-700">
+                                        Due Date
+                                    </label>
+                                    <select id="dueDate" name="dueDate"
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                        <option value="">All Due Dates</option>
+                                        <option value="overdue">Overdue</option>
+                                        <option value="today">Due Today</option>
+                                        <option value="tomorrow">Due Tomorrow</option>
+                                        <option value="this_week">Due This Week</option>
+                                        <option value="next_week">Due Next Week</option>
+                                        <option value="this_month">Due This Month</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="progress" class="block text-sm font-medium text-gray-700">
+                                        Progress
+                                    </label>
+                                    <select id="progress" name="progress"
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                        <option value="">All Progress</option>
+                                        <option value="0">0%</option>
+                                        <option value="25">25%</option>
+                                        <option value="50">50%</option>
+                                        <option value="75">75%</option>
+                                        <option value="100">100%</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label for="sortBy" class="block text-sm font-medium text-gray-700">
+                                        Sort By
+                                    </label>
+                                    <select id="sortBy" name="sortBy"
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                        <option value="due_date_asc">Due Date (Ascending)</option>
+                                        <option value="due_date_desc">Due Date (Descending)</option>
+                                        <option value="title_asc">Title (A-Z)</option>
+                                        <option value="title_desc">Title (Z-A)</option>
+                                        <option value="progress_asc">Progress (Low to High)</option>
+                                        <option value="progress_desc">Progress (High to Low)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit"
+                                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Apply Filters
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Filtered Tasks -->
+                <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Filtered Tasks
+                        </h3>
+                    </div>
+                    <div class="border-t border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Task
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Category
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Due Date
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Progress
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="filteredTasksTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Filtered tasks will be loaded here -->
+                                <tr>
+                                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                        Apply filters to see tasks
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'your_supabase_url_here';
+        const supabaseAnonKey = 'your_supabase_anon_key_here';
+        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // Check authentication and load data
+        async function initializePage() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (error || !session) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Get user profile
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('name, role')
+                .eq('id', session.user.id)
+                .single();
+                
+            if (profileError || profile.role !== 'employee') {
+                window.location.href = '/dashboard.html';
+                return;
+            }
+            
+            // Set user name
+            document.getElementById('userName').textContent = profile.name;
+            
+            // Load categories
+            loadCategories();
+        }
+
+        // Load categories
+        async function loadCategories() {
+            const { data: categories, error } = await supabase
+                .from('categories')
+                .select('id, name')
+                .order('name');
+                
+            if (error) {
+                console.error('Error loading categories:', error);
+                return;
+            }
+            
+            // Add categories to dropdown
+            const categorySelect = document.getElementById('category');
+            const categoryOptions = categories.map(category => 
+                `<option value="${category.id}">${category.name}</option>`
+            ).join('');
+            
+            categorySelect.innerHTML += categoryOptions;
+        }
+
+        // Handle form submission
+        document.getElementById('filterForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const status = document.getElementById('status').value;
+            const category = document.getElementById('category').value;
+            const dueDate = document.getElementById('dueDate').value;
+            const progress = document.getElementById('progress').value;
+            const sortBy = document.getElementById('sortBy').value;
+            
+            // Get current user
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            // Build query
+            let query = supabase
+                .from('tasks')
+                .select(`
+                    id,
+                    title,
+                    description,
+                    due_date,
+                    status,
+                    progress,
+                    category_id,
+                    categories:category_id (
+                        name
+                    )
+                `)
+                .eq('assigned_to', session.user.id)
+                .eq('archived', false);
+            
+            // Apply filters
+            if (status) {
+                query = query.eq('status', status);
+            }
+            
+            if (category) {
+                query = query.eq('category_id', category);
+            }
+            
+            if (progress) {
+                query = query.eq('progress', parseInt(progress));
+            }
+            
+            // Apply due date filter
+            if (dueDate) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                const nextWeek = new Date(today);
+                nextWeek.setDate(nextWeek.getDate() + 7);
+                
+                const thisMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                
+                switch (dueDate) {
+                    case 'overdue':
+                        query = query.lt('due_date', today.toISOString().split('T')[0]);
+                        break;
+                    case 'today':
+                        query = query.eq('due_date', today.toISOString().split('T')[0]);
+                        break;
+                    case 'tomorrow':
+                        query = query.eq('due_date', tomorrow.toISOString().split('T')[0]);
+                        break;
+                    case 'this_week':
+                        query = query.gte('due_date', today.toISOString().split('T')[0])
+                            .lt('due_date', nextWeek.toISOString().split('T')[0]);
+                        break;
+                    case 'next_week':
+                        query = query.gte('due_date', nextWeek.toISOString().split('T')[0])
+                            .lt('due_date', new Date(nextWeek.setDate(nextWeek.getDate() + 7)).toISOString().split('T')[0]);
+                        break;
+                    case 'this_month':
+                        query = query.gte('due_date', today.toISOString().split('T')[0])
+                            .lte('due_date', thisMonth.toISOString().split('T')[0]);
+                        break;
+                }
+            }
+            
+            // Apply sorting
+            switch (sortBy) {
+                case 'due_date_asc':
+                    query = query.order('due_date', { ascending: true });
+                    break;
+                case 'due_date_desc':
+                    query = query.order('due_date', { ascending: false });
+                    break;
+                case 'title_asc':
+                    query = query.order('title', { ascending: true });
+                    break;
+                case 'title_desc':
+                    query = query.order('title', { ascending: false });
+                    break;
+                case 'progress_asc':
+                    query = query.order('progress', { ascending: true });
+                    break;
+                case 'progress_desc':
+                    query = query.order('progress', { ascending: false });
+                    break;
+                default:
+                    query = query.order('due_date', { ascending: true });
+            }
+            
+            const { data: tasks, error } = await query;
+                
+            if (error) {
+                console.error('Error loading tasks:', error);
+                document.getElementById('filteredTasksTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-red-500">
+                            Error loading tasks. Please try again.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            if (tasks.length === 0) {
+                document.getElementById('filteredTasksTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                            No tasks found matching your filters.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Render tasks
+            const tasksHTML = tasks.map(task => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">${task.title}</div>
+                        <div class="text-sm text-gray-500">${task.description || 'No description'}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${task.categories?.name || 'Uncategorized'}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${formatDate(task.due_date)}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(task.status)}">
+                            ${formatStatus(task.status)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-primary h-2.5 rounded-full" style="width: ${task.progress}%"></div>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">${task.progress}%</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="update_progress.html?id=${task.id}" class="text-primary hover:text-primary-dark">Update Progress</a>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('filteredTasksTableBody').innerHTML = tasksHTML;
+        });
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString();
+        }
+
+        // Format status
+        function formatStatus(status) {
+            if (!status) return 'Unknown';
+            return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+        }
+
+        // Get status class for styling
+        function getStatusClass(status) {
+            switch (status) {
+                case 'pending':
+                    return 'bg-yellow-100 text-yellow-800';
+                case 'in_progress':
+                    return 'bg-blue-100 text-blue-800';
+                case 'completed':
+                    return 'bg-green-100 text-green-800';
+                default:
+                    return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Initialize page
+        initializePage();
+    </script>
+</body>
+</html> 

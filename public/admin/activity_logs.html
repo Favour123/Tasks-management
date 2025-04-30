@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Logs - Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        'primary-dark': '#2563EB',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
+                        </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <a href="view_all_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                All Tasks
+                            </a>
+                            <a href="assign_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Assign Task
+                            </a>
+                            <a href="create_category.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Create Category
+                            </a>
+                            <a href="export_report.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Export Report
+                            </a>
+                            <a href="archive_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Archive Task
+                            </a>
+                            <a href="activity_logs.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Activity Logs
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                        <div class="ml-3 relative">
+                            <div class="flex items-center">
+                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
+                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Activity Logs
+                        </h3>
+                        <div class="flex space-x-4">
+                            <div>
+                                <label for="filterAction" class="block text-sm font-medium text-gray-700">
+                                    Filter by Action
+                                </label>
+                                <select id="filterAction" name="filterAction"
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                    <option value="">All Actions</option>
+                                    <option value="create_task">Create Task</option>
+                                    <option value="update_progress">Update Progress</option>
+                                    <option value="archive_task">Archive Task</option>
+                                    <option value="create_category">Create Category</option>
+                                    <option value="export_report">Export Report</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="filterUser" class="block text-sm font-medium text-gray-700">
+                                    Filter by User
+                                </label>
+                                <select id="filterUser" name="filterUser"
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                    <option value="">All Users</option>
+                                    <!-- Users will be loaded here -->
+                                </select>
+                            </div>
+                            <div>
+                                <label for="filterDate" class="block text-sm font-medium text-gray-700">
+                                    Filter by Date
+                                </label>
+                                <select id="filterDate" name="filterDate"
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                    <option value="">All Time</option>
+                                    <option value="today">Today</option>
+                                    <option value="yesterday">Yesterday</option>
+                                    <option value="last_7_days">Last 7 Days</option>
+                                    <option value="last_30_days">Last 30 Days</option>
+                                    <option value="this_month">This Month</option>
+                                    <option value="last_month">Last Month</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border-t border-gray-200">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Date & Time
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        User
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Action
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Task
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Details
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="activityLogsTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Activity logs will be loaded here -->
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                        Loading activity logs...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'your_supabase_url_here';
+        const supabaseAnonKey = 'your_supabase_anon_key_here';
+        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // Check authentication and load data
+        async function initializePage() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (error || !session) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Get user profile
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('name, role')
+                .eq('id', session.user.id)
+                .single();
+                
+            if (profileError || profile.role !== 'admin') {
+                window.location.href = '/dashboard.html';
+                return;
+            }
+            
+            // Set user name
+            document.getElementById('userName').textContent = profile.name;
+            
+            // Load users and activity logs
+            loadUsers();
+            loadActivityLogs();
+            
+            // Add event listeners for filters
+            document.getElementById('filterAction').addEventListener('change', loadActivityLogs);
+            document.getElementById('filterUser').addEventListener('change', loadActivityLogs);
+            document.getElementById('filterDate').addEventListener('change', loadActivityLogs);
+        }
+
+        // Load users for filter dropdown
+        async function loadUsers() {
+            const { data: users, error } = await supabase
+                .from('profiles')
+                .select('id, name')
+                .order('name');
+                
+            if (error) {
+                console.error('Error loading users:', error);
+                return;
+            }
+            
+            // Add users to dropdown
+            const userSelect = document.getElementById('filterUser');
+            const userOptions = users.map(user => 
+                `<option value="${user.id}">${user.name}</option>`
+            ).join('');
+            
+            userSelect.innerHTML += userOptions;
+        }
+
+        // Load activity logs
+        async function loadActivityLogs() {
+            const actionFilter = document.getElementById('filterAction').value;
+            const userFilter = document.getElementById('filterUser').value;
+            const dateFilter = document.getElementById('filterDate').value;
+            
+            let query = supabase
+                .from('activity_logs')
+                .select(`
+                    id,
+                    created_at,
+                    action,
+                    details,
+                    task_id,
+                    user_id,
+                    profiles:user_id (
+                        name
+                    ),
+                    tasks:task_id (
+                        title
+                    )
+                `)
+                .order('created_at', { ascending: false });
+            
+            // Apply filters
+            if (actionFilter) {
+                query = query.eq('action', actionFilter);
+            }
+            
+            if (userFilter) {
+                query = query.eq('user_id', userFilter);
+            }
+            
+            if (dateFilter) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                let startDate;
+                
+                switch (dateFilter) {
+                    case 'today':
+                        startDate = today;
+                        break;
+                    case 'yesterday':
+                        startDate = new Date(today);
+                        startDate.setDate(startDate.getDate() - 1);
+                        break;
+                    case 'last_7_days':
+                        startDate = new Date(today);
+                        startDate.setDate(startDate.getDate() - 7);
+                        break;
+                    case 'last_30_days':
+                        startDate = new Date(today);
+                        startDate.setDate(startDate.getDate() - 30);
+                        break;
+                    case 'this_month':
+                        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                        break;
+                    case 'last_month':
+                        startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                        const endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                        query = query.gte('created_at', startDate.toISOString())
+                            .lte('created_at', endDate.toISOString());
+                        break;
+                }
+                
+                if (dateFilter !== 'last_month') {
+                    query = query.gte('created_at', startDate.toISOString());
+                }
+            }
+            
+            const { data: logs, error } = await query;
+                
+            if (error) {
+                console.error('Error loading activity logs:', error);
+                document.getElementById('activityLogsTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-red-500">
+                            Error loading activity logs. Please try again.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            if (logs.length === 0) {
+                document.getElementById('activityLogsTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                            No activity logs found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            // Render activity logs
+            const logsHTML = logs.map(log => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">${formatDateTime(log.created_at)}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${log.profiles?.name || 'Unknown User'}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${formatAction(log.action)}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-500">${log.tasks?.title || 'N/A'}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-500">${log.details || 'No details provided'}</div>
+                    </td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('activityLogsTableBody').innerHTML = logsHTML;
+        }
+
+        // Format date and time
+        function formatDateTime(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleString();
+        }
+
+        // Format action
+        function formatAction(action) {
+            if (!action) return 'Unknown';
+            return action.split('_').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+        }
+
+        // Initialize page
+        initializePage();
+    </script>
+</body>
+</html> 

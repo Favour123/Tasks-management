@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        'primary-dark': '#2563EB',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
+            <div>
+                <h2 class="text-center text-3xl font-extrabold text-gray-900">Create your account</h2>
+            </div>
+            <form class="mt-8 space-y-6" id="registerForm">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="name" class="sr-only">Full Name</label>
+                        <input id="name" name="name" type="text" required 
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" 
+                            placeholder="Full Name">
+                    </div>
+                    <div>
+                        <label for="email" class="sr-only">Email address</label>
+                        <input id="email" name="email" type="email" required 
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" 
+                            placeholder="Email address">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Password</label>
+                        <input id="password" name="password" type="password" required 
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" 
+                            placeholder="Password">
+                    </div>
+                    <div>
+                        <label for="role" class="sr-only">Role</label>
+                        <select id="role" name="role" required 
+                            class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm">
+                            <option value="">Select Role</option>
+                            <option value="employee">Employee</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" 
+                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                        Sign up
+                    </button>
+                </div>
+            </form>
+            <div class="text-center">
+                <a href="login.html" class="text-sm text-primary hover:text-primary-dark">
+                    Already have an account? Sign in
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://yxqbajnucttwmcfhuzqg.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4cWJham51Y3R0d21jZmh1enFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjEzOTgsImV4cCI6MjA1OTU5NzM5OH0.44CBRDkAafGaQyM05OpnjjxEoSBq_HAlZFDsghRK7fQ';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // Handle registration form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+
+            try {
+                // Register the user
+                const { data, error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            name,
+                            role
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                // Create user profile in the profiles table
+                if (data.user) {
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .insert([
+                            { 
+                                id: data.user.id, 
+                                name: name, 
+                                role: role,
+                                created_at: new Date()
+                            }
+                        ]);
+
+                    if (profileError) throw profileError;
+                }
+
+                alert('Registration successful! Please check your email for verification.');
+                window.location.href = '/login.html';
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+    </script>
+</body>
+</html>

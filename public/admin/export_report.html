@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export Report - Task Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        'primary-dark': '#2563EB',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-white shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex">
+                        <div class="flex-shrink-0 flex items-center">
+                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
+                        </div>
+                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            <a href="view_all_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                All Tasks
+                            </a>
+                            <a href="assign_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Assign Task
+                            </a>
+                            <a href="create_category.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Create Category
+                            </a>
+                            <a href="export_report.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Export Report
+                            </a>
+                            <a href="archive_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Archive Task
+                            </a>
+                            <a href="activity_logs.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                Activity Logs
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                        <div class="ml-3 relative">
+                            <div class="flex items-center">
+                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
+                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <div class="px-4 py-6 sm:px-0">
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            Export Report
+                        </h3>
+                    </div>
+                    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+                        <form id="exportReportForm" class="space-y-6">
+                            <div>
+                                <label for="reportType" class="block text-sm font-medium text-gray-700">
+                                    Report Type
+                                </label>
+                                <select id="reportType" name="reportType" required
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                    <option value="all_tasks">All Tasks</option>
+                                    <option value="completed_tasks">Completed Tasks</option>
+                                    <option value="pending_tasks">Pending Tasks</option>
+                                    <option value="employee_performance">Employee Performance</option>
+                                    <option value="category_summary">Category Summary</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="dateRange" class="block text-sm font-medium text-gray-700">
+                                    Date Range
+                                </label>
+                                <select id="dateRange" name="dateRange" required
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                    <option value="last_7_days">Last 7 Days</option>
+                                    <option value="last_30_days">Last 30 Days</option>
+                                    <option value="last_90_days">Last 90 Days</option>
+                                    <option value="this_month">This Month</option>
+                                    <option value="last_month">Last Month</option>
+                                    <option value="this_year">This Year</option>
+                                    <option value="custom">Custom Range</option>
+                                </select>
+                            </div>
+
+                            <div id="customDateRange" class="hidden space-y-4">
+                                <div>
+                                    <label for="startDate" class="block text-sm font-medium text-gray-700">
+                                        Start Date
+                                    </label>
+                                    <input type="date" name="startDate" id="startDate"
+                                        class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                </div>
+
+                                <div>
+                                    <label for="endDate" class="block text-sm font-medium text-gray-700">
+                                        End Date
+                                    </label>
+                                    <input type="date" name="endDate" id="endDate"
+                                        class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="format" class="block text-sm font-medium text-gray-700">
+                                    Export Format
+                                </label>
+                                <select id="format" name="format" required
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                    <option value="csv">CSV</option>
+                                    <option value="pdf">PDF</option>
+                                    <option value="excel">Excel</option>
+                                </select>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit"
+                                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Export Report
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'your_supabase_url_here';
+        const supabaseAnonKey = 'your_supabase_anon_key_here';
+        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        // Check authentication
+        async function initializePage() {
+            const { data: { session }, error } = await supabase.auth.getSession();
+            
+            if (error || !session) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Get user profile
+            const { data: profile, error: profileError } = await supabase
+                .from('profiles')
+                .select('name, role')
+                .eq('id', session.user.id)
+                .single();
+                
+            if (profileError || profile.role !== 'admin') {
+                window.location.href = '/dashboard.html';
+                return;
+            }
+            
+            // Set user name
+            document.getElementById('userName').textContent = profile.name;
+        }
+
+        // Show/hide custom date range inputs
+        document.getElementById('dateRange').addEventListener('change', (e) => {
+            const customDateRange = document.getElementById('customDateRange');
+            if (e.target.value === 'custom') {
+                customDateRange.classList.remove('hidden');
+            } else {
+                customDateRange.classList.add('hidden');
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('exportReportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const reportType = document.getElementById('reportType').value;
+            const dateRange = document.getElementById('dateRange').value;
+            const format = document.getElementById('format').value;
+            
+            let startDate, endDate;
+            
+            // Calculate date range
+            if (dateRange === 'custom') {
+                startDate = document.getElementById('startDate').value;
+                endDate = document.getElementById('endDate').value;
+                
+                if (!startDate || !endDate) {
+                    alert('Please select both start and end dates.');
+                    return;
+                }
+            } else {
+                const today = new Date();
+                endDate = today.toISOString().split('T')[0];
+                
+                switch (dateRange) {
+                    case 'last_7_days':
+                        startDate = new Date(today.setDate(today.getDate() - 7)).toISOString().split('T')[0];
+                        break;
+                    case 'last_30_days':
+                        startDate = new Date(today.setDate(today.getDate() - 30)).toISOString().split('T')[0];
+                        break;
+                    case 'last_90_days':
+                        startDate = new Date(today.setDate(today.getDate() - 90)).toISOString().split('T')[0];
+                        break;
+                    case 'this_month':
+                        startDate = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+                        break;
+                    case 'last_month':
+                        startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1).toISOString().split('T')[0];
+                        endDate = new Date(today.getFullYear(), today.getMonth(), 0).toISOString().split('T')[0];
+                        break;
+                    case 'this_year':
+                        startDate = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+                        break;
+                }
+            }
+            
+            try {
+                // Log activity
+                const { error: logError } = await supabase
+                    .from('activity_logs')
+                    .insert([
+                        {
+                            user_id: (await supabase.auth.getSession()).data.session.user.id,
+                            action: 'export_report',
+                            details: `Exported ${reportType} report in ${format} format for period ${startDate} to ${endDate}.`,
+                            created_at: new Date()
+                        }
+                    ]);
+                    
+                if (logError) throw logError;
+                
+                // In a real application, you would generate and download the report here
+                // For this example, we'll just show a success message
+                alert('Report exported successfully!');
+                
+                // Reset form
+                document.getElementById('exportReportForm').reset();
+                document.getElementById('customDateRange').classList.add('hidden');
+            } catch (error) {
+                console.error('Error exporting report:', error);
+                alert('Error exporting report. Please try again.');
+            }
+        });
+
+        // Initialize page
+        initializePage();
+    </script>
+</body>
+</html> 
