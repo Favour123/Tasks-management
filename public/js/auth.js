@@ -32,12 +32,18 @@ async function getUserProfile() {
 }
 
 // Sign up new user
-async function signUp(email, password, name, role) {
+async function signUp(email, password, name, role = 'employee') {
     try {
         // Sign up with Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
+            options: {
+                data: {
+                    name: name,
+                    role: role
+                }
+            }
         });
 
         if (authError) throw authError;
@@ -48,12 +54,20 @@ async function signUp(email, password, name, role) {
             .insert([
                 {
                     id: authData.user.id,
-                    name,
-                    role,
-                },
-            ]);
+                    name: name,
+                    role: role,
+                    email: email
+                }
+            ])
+            .select()
+            .single();
 
-        if (profileError) throw profileError;
+        if (profileError) {
+            console.error('Profile creation error:', profileError);
+            // If profile creation fails, delete the auth user
+            await supabase.auth.admin.deleteUser(authData.user.id);
+            throw profileError;
+        }
 
         return { success: true, user: authData.user };
     } catch (error) {
@@ -84,6 +98,7 @@ async function signOut() {
     try {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
+        window.location.href = '/login.html';
         return { success: true };
     } catch (error) {
         console.error('Error signing out:', error.message);
@@ -104,4 +119,4 @@ async function redirectBasedOnRole() {
     } else {
         window.location.href = '/employee/dashboard.html';
     }
-} 
+}

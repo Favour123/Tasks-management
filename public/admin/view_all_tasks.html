@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View All Tasks - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/auth.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-lg">
+            <div class="p-4">
+                <h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
+          </div>
+            <nav class="mt-6">
+                <a href="/admin/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="/admin/view_all_tasks.html" class="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Tasks
+                </a>
+                <a href="/admin/assign_task.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                            Assign Task
+                        </a>
+                <a href="/admin/create_category.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    Categories
+                </a>
+                <a href="/admin/activity_logs.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Activity Logs
+                </a>
+                <a href="/admin/export_report.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Reports
+                </a>
+                <a href="#" onclick="signOut()" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Logout
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <div class="p-8">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">All Tasks</h2>
+                    <div class="flex items-center space-x-4">
+                        <a href="/admin/assign_task.html" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+                            New Task
+                        </a>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-gray-700 font-medium" id="adminName">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+    <!-- Tasks Table -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6">
+        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="text-left text-gray-500">
+                                        <th class="pb-4">Title</th>
+                                        <th class="pb-4">Assigned To</th>
+                                        <th class="pb-4">Category</th>
+                                        <th class="pb-4">Due Date</th>
+                                        <th class="pb-4">Status</th>
+                                        <th class="pb-4">Priority</th>
+                                        <th class="pb-4">Assigned By</th>
+              </tr>
+            </thead>
+                                <tbody id="taskTableBody">
+                                    <!-- Tasks will be loaded here -->
+            </tbody>
+          </table>
+                        </div>
+                    </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+        // Check authentication and load data
+        async function initializePage() {
+            const session = await checkAuth();
+            if (!session) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            const profile = await getUserProfile();
+            if (!profile || profile.role !== 'admin') {
+                window.location.href = '/login.html';
+        return;
+      }
+
+            // Display admin name
+            document.getElementById('adminName').textContent = profile.name;
+
+            // Load tasks
+            loadTasks();
+        }
+
+        // Load tasks
+        async function loadTasks() {
+            try {
+                const { data: tasks, error } = await supabase
+                    .from('tasks')
+                    .select(`
+                        *,
+                        assigned_to:profiles!tasks_assigned_to_fkey(id, name),
+                        assigned_by:profiles!tasks_assigned_by_fkey(id, name),
+                        category:categories!tasks_category_id_fkey(id, name)
+                    `)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const taskTableBody = document.getElementById('taskTableBody');
+                taskTableBody.innerHTML = tasks.map(task => `
+                    <tr class="border-t">
+                        <td class="py-4">${task.title}</td>
+                        <td class="py-4">${task.assigned_to?.name || 'Unassigned'}</td>
+                        <td class="py-4">${task.category?.name || 'N/A'}</td>
+                        <td class="py-4">${formatDate(task.due_date)}</td>
+                        <td class="py-4">
+                            <span class="px-2 py-1 bg-${getStatusColor(task.status)}-100 text-${getStatusColor(task.status)}-800 rounded-full text-sm">
+                                ${task.status}
+                            </span>
+                        </td>
+                        <td class="py-4">
+                            <span class="px-2 py-1 bg-${getPriorityColor(task.priority)}-100 text-${getPriorityColor(task.priority)}-800 rounded-full text-sm">
+                                ${getPriorityLabel(task.priority)}
+                            </span>
+                        </td>
+                        <td class="py-4">${task.assigned_by?.name || 'N/A'}</td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading tasks:', error);
+            }
+        }
+
+        // Helper functions
+        function getStatusColor(status) {
+            const colors = {
+                'pending': 'yellow',
+                'in_progress': 'blue',
+                'completed': 'green',
+                'cancelled': 'red'
+            };
+            return colors[status] || 'gray';
+        }
+
+        function getPriorityColor(priority) {
+            const colors = {
+                1: 'green',    // Low
+                2: 'yellow',   // Medium
+                3: 'red',      // High
+                4: 'purple'    // Urgent
+            };
+            return colors[priority] || 'gray';
+        }
+
+        function getPriorityLabel(priority) {
+            const labels = {
+                1: 'Low',
+                2: 'Medium',
+                3: 'High',
+                4: 'Urgent'
+            };
+            return labels[priority] || 'Unknown';
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString();
+        }
+
+        // Initialize page when loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
+  </script>
+</body>
+</html>

@@ -3,122 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activity Logs - Task Manager</title>
+    <title>Activity Logs - Employee Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        'primary-dark': '#2563EB',
-                    }
-                }
-            }
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/auth.js"></script>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white shadow-md">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center">
-                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-16 md:w-64 bg-white shadow-lg transition-all duration-300">
+            <div class="p-4">
+                <h1 class="text-2xl font-bold text-gray-800 hidden md:block">Employee Panel</h1>
                         </div>
-                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <a href="my_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                My Tasks
-                            </a>
-                            <a href="update_progress.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Update Progress
-                            </a>
-                            <a href="filter_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Filter Tasks
-                            </a>
-                            <a href="activity_logs.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Activity Logs
-                            </a>
+            <nav class="mt-6">
+                <a href="/employee/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span class="hidden md:inline">Dashboard</span>
+                </a>
+                <a href="/employee/my_tasks.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <span class="hidden md:inline">My Tasks</span>
+                </a>
+                <a href="/employee/update_progress.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="hidden md:inline">Update Progress</span>
+                </a>
+                <a href="/employee/filter_tasks.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    <span class="hidden md:inline">Filter Tasks</span>
+                </a>
+                <a href="/employee/activity_logs.html" class="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <span class="hidden md:inline">Activity Logs</span>
+                </a>
+                <a href="#" onclick="signOut()" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    <span class="hidden md:inline">Logout</span>
+                </a>
+            </nav>
                         </div>
-                    </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
-                        <div class="ml-3 relative">
-                            <div class="flex items-center">
-                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
-                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
 
         <!-- Main Content -->
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">
-                            My Activity Logs
-                        </h3>
-                        <div class="flex space-x-4">
-                            <div>
-                                <label for="filterAction" class="block text-sm font-medium text-gray-700">
-                                    Filter by Action
-                                </label>
-                                <select id="filterAction" name="filterAction"
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
-                                    <option value="">All Actions</option>
-                                    <option value="update_progress">Update Progress</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="filterDate" class="block text-sm font-medium text-gray-700">
-                                    Filter by Date
-                                </label>
-                                <select id="filterDate" name="filterDate"
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
-                                    <option value="">All Time</option>
-                                    <option value="today">Today</option>
-                                    <option value="yesterday">Yesterday</option>
-                                    <option value="last_7_days">Last 7 Days</option>
-                                    <option value="last_30_days">Last 30 Days</option>
-                                    <option value="this_month">This Month</option>
-                                    <option value="last_month">Last Month</option>
-                                </select>
-                            </div>
-                        </div>
+        <div class="flex-1 overflow-auto">
+            <div class="p-8">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Activity Logs</h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-700 font-medium" id="employeeName">Loading...</span>
                     </div>
-                    <div class="border-t border-gray-200">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Date & Time
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Action
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Task
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Details
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="activityLogsTableBody" class="bg-white divide-y divide-gray-200">
-                                <!-- Activity logs will be loaded here -->
-                                <tr>
-                                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">
-                                        Loading activity logs...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-lg shadow mb-8">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Filter Options</h3>
+                        <form id="filterForm" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div>
+                                <label for="activityType" class="block text-sm font-medium text-gray-700">Activity Type</label>
+                                <select id="activityType" name="activityType" 
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    <option value="all">All Activities</option>
+                                    <option value="task_created">Task Created</option>
+                                    <option value="task_updated">Task Updated</option>
+                                    <option value="task_completed">Task Completed</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="dateRange" class="block text-sm font-medium text-gray-700">Date Range</label>
+                                <select id="dateRange" name="dateRange" 
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    <option value="all">All Time</option>
+                                    <option value="today">Today</option>
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="sortBy" class="block text-sm font-medium text-gray-700">Sort By</label>
+                                <select id="sortBy" name="sortBy" 
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                    <option value="newest">Newest First</option>
+                                    <option value="oldest">Oldest First</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Activity Logs -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6">
+                        <div class="space-y-4" id="activityLogs">
+                            <!-- Activity items will be loaded here -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -126,172 +118,143 @@
     </div>
 
     <script>
-        // Initialize Supabase client
-        const supabaseUrl = 'your_supabase_url_here';
-        const supabaseAnonKey = 'your_supabase_anon_key_here';
-        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
-
         // Check authentication and load data
         async function initializePage() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (error || !session) {
+            const session = await checkAuth();
+            if (!session) {
                 window.location.href = '/login.html';
                 return;
             }
             
-            // Get user profile
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('name, role')
-                .eq('id', session.user.id)
-                .single();
-                
-            if (profileError || profile.role !== 'employee') {
-                window.location.href = '/dashboard.html';
+            const profile = await getUserProfile();
+            if (!profile || profile.role !== 'employee') {
+                window.location.href = '/login.html';
                 return;
             }
             
-            // Set user name
-            document.getElementById('userName').textContent = profile.name;
+            // Display employee name
+            document.getElementById('employeeName').textContent = profile.name;
             
             // Load activity logs
             loadActivityLogs();
             
-            // Add event listeners for filters
-            document.getElementById('filterAction').addEventListener('change', loadActivityLogs);
-            document.getElementById('filterDate').addEventListener('change', loadActivityLogs);
+            // Add event listeners
+            document.getElementById('filterForm').addEventListener('change', loadActivityLogs);
         }
 
         // Load activity logs
         async function loadActivityLogs() {
-            const actionFilter = document.getElementById('filterAction').value;
-            const dateFilter = document.getElementById('filterDate').value;
-            
-            // Get current user
-            const { data: { session } } = await supabase.auth.getSession();
-            
-            let query = supabase
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                const userId = session.user.id;
+                
+                // Get filter values
+                const activityType = document.getElementById('activityType').value;
+                const dateRange = document.getElementById('dateRange').value;
+                const sortBy = document.getElementById('sortBy').value;
+                
+                // Build query
+                let query = supabase
                 .from('activity_logs')
                 .select(`
-                    id,
-                    created_at,
-                    action,
-                    details,
-                    task_id,
-                    tasks:task_id (
+                        *,
+                        tasks (
                         title
                     )
                 `)
-                .eq('user_id', session.user.id)
-                .order('created_at', { ascending: false });
-            
-            // Apply filters
-            if (actionFilter) {
-                query = query.eq('action', actionFilter);
-            }
-            
-            if (dateFilter) {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
+                    .eq('user_id', userId);
+                    
+                // Apply activity type filter if not 'all'
+                if (activityType !== 'all') {
+                    query = query.eq('action', activityType);
+                }
                 
+                // Apply date range filter
+                if (dateRange !== 'all') {
+                    const now = new Date();
                 let startDate;
                 
-                switch (dateFilter) {
+                    switch (dateRange) {
                     case 'today':
-                        startDate = today;
+                            startDate = new Date(now.setHours(0, 0, 0, 0));
                         break;
-                    case 'yesterday':
-                        startDate = new Date(today);
-                        startDate.setDate(startDate.getDate() - 1);
+                        case 'week':
+                            startDate = new Date(now.setDate(now.getDate() - now.getDay()));
                         break;
-                    case 'last_7_days':
-                        startDate = new Date(today);
-                        startDate.setDate(startDate.getDate() - 7);
-                        break;
-                    case 'last_30_days':
-                        startDate = new Date(today);
-                        startDate.setDate(startDate.getDate() - 30);
-                        break;
-                    case 'this_month':
-                        startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-                        break;
-                    case 'last_month':
-                        startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-                        const endDate = new Date(today.getFullYear(), today.getMonth(), 0);
-                        query = query.gte('created_at', startDate.toISOString())
-                            .lte('created_at', endDate.toISOString());
+                        case 'month':
+                            startDate = new Date(now.getFullYear(), now.getMonth(), 1);
                         break;
                 }
                 
-                if (dateFilter !== 'last_month') {
                     query = query.gte('created_at', startDate.toISOString());
                 }
-            }
-            
-            const { data: logs, error } = await query;
                 
-            if (error) {
+                // Apply sorting
+                query = query.order('created_at', { ascending: sortBy === 'oldest' });
+                
+                const { data: activities, error } = await query;
+                
+                if (error) throw error;
+                
+                const activityLogs = document.getElementById('activityLogs');
+                
+                if (activities.length === 0) {
+                    activityLogs.innerHTML = `
+                        <div class="text-center text-gray-500">
+                            No activities found matching the selected filters.
+                        </div>
+                `;
+                return;
+            }
+            
+                activityLogs.innerHTML = activities.map(activity => `
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <div class="w-2 h-2 bg-${getActivityColor(activity.action)}-500 rounded-full mt-1"></div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <div class="text-sm text-gray-900">
+                                ${activity.tasks?.title ? `Task: ${activity.tasks.title} - ` : ''}${activity.details?.message || 'No message'}
+                            </div>
+                            <div class="mt-1 text-sm text-gray-500">
+                                ${formatTimeAgo(activity.created_at)}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
                 console.error('Error loading activity logs:', error);
-                document.getElementById('activityLogsTableBody').innerHTML = `
-                    <tr>
-                        <td colspan="4" class="px-6 py-4 text-center text-red-500">
-                            Error loading activity logs. Please try again.
-                        </td>
-                    </tr>
+                document.getElementById('activityLogs').innerHTML = `
+                    <div class="text-center text-red-500">
+                        Error loading activity logs. Please try again.
+                    </div>
                 `;
-                return;
             }
-            
-            if (logs.length === 0) {
-                document.getElementById('activityLogsTableBody').innerHTML = `
-                    <tr>
-                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">
-                            No activity logs found.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            // Render activity logs
-            const logsHTML = logs.map(log => `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">${formatDateTime(log.created_at)}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">${formatAction(log.action)}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">${log.tasks?.title || 'N/A'}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="text-sm text-gray-500">${log.details || 'No details provided'}</div>
-                    </td>
-                </tr>
-            `).join('');
-            
-            document.getElementById('activityLogsTableBody').innerHTML = logsHTML;
         }
 
-        // Format date and time
-        function formatDateTime(dateString) {
-            if (!dateString) return 'N/A';
+        // Helper functions
+        function getActivityColor(type) {
+            const colors = {
+                'task_created': 'blue',
+                'task_updated': 'yellow',
+                'task_completed': 'green'
+            };
+            return colors[type] || 'gray';
+        }
+
+        function formatTimeAgo(dateString) {
             const date = new Date(dateString);
-            return date.toLocaleString();
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) return 'just now';
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+            return `${Math.floor(diffInSeconds / 86400)}d ago`;
         }
 
-        // Format action
-        function formatAction(action) {
-            if (!action) return 'Unknown';
-            return action.split('_').map(word => 
-                word.charAt(0).toUpperCase() + word.slice(1)
-            ).join(' ');
-        }
-
-        // Initialize page
-        initializePage();
+        // Initialize page when loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
     </script>
 </body>
 </html> 

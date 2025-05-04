@@ -3,267 +3,235 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Tasks - Task Manager</title>
+    <title>My Tasks - Employee Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        'primary-dark': '#2563EB',
-                    }
-                }
-            }
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/auth.js"></script>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white shadow-md">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center">
-                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-lg">
+            <div class="p-4">
+                <h1 class="text-2xl font-bold text-gray-800">Employee Panel</h1>
                         </div>
-                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <a href="my_tasks.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+            <nav class="mt-6">
+                <a href="/employee/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                                Dashboard
+                            </a>
+                <a href="/employee/my_tasks.html" class="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
                                 My Tasks
                             </a>
-                            <a href="update_progress.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                <a href="/employee/update_progress.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
                                 Update Progress
                             </a>
-                            <a href="filter_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                <a href="/employee/filter_tasks.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
                                 Filter Tasks
                             </a>
-                            <a href="activity_logs.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                <a href="/employee/activity_logs.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
                                 Activity Logs
                             </a>
-                        </div>
-                    </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
-                        <div class="ml-3 relative">
-                            <div class="flex items-center">
-                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
-                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <a href="#" onclick="signOut()" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Logout
+                </a>
+            </nav>
             </div>
-        </nav>
 
         <!-- Main Content -->
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">My Tasks</h2>
-                    <div class="flex space-x-2">
-                        <select id="statusFilter" class="input-field">
+        <div class="flex-1 overflow-auto">
+            <div class="p-8">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">My Tasks</h2>
+                    <div class="flex items-center space-x-4">
+                        <select id="statusFilter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                             <option value="all">All Status</option>
                             <option value="pending">Pending</option>
                             <option value="in_progress">In Progress</option>
                             <option value="completed">Completed</option>
                         </select>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-gray-700 font-medium" id="employeeName">Loading...</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Tasks Table -->
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Task
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Category
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Due Date
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Progress
-                                </th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead>
+                                    <tr class="text-left text-gray-500">
+                                        <th class="pb-4">Task</th>
+                                        <th class="pb-4">Category</th>
+                                        <th class="pb-4">Due Date</th>
+                                        <th class="pb-4">Status</th>
+                                        <th class="pb-4">Progress</th>
+                                        <th class="pb-4">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="tasksTableBody" class="bg-white divide-y divide-gray-200">
-                            <!-- Tasks will be loaded here -->
+                                <tbody id="tasksTableBody">
                             <tr>
-                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                                        <td colspan="6" class="py-4 text-center text-gray-500">
                                     Loading tasks...
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Initialize Supabase client
-        const supabaseUrl = 'your_supabase_url_here';
-        const supabaseAnonKey = 'your_supabase_anon_key_here';
-        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+        // Check authentication and load data
+        async function initializePage() {
+            const session = await checkAuth();
+            if (!session) {
+        window.location.href = '/login.html';
+        return;
+    }
 
-        // Check authentication
-        async function checkAuth() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (error || !session) {
+            const profile = await getUserProfile();
+            if (!profile || profile.role !== 'employee') {
                 window.location.href = '/login.html';
-                return;
-            }
-            
-            // Get user profile
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('name, role')
-                .eq('id', session.user.id)
-                .single();
-                
-            if (profileError || profile.role !== 'employee') {
-                window.location.href = '/dashboard.html';
-                return;
-            }
-            
-            // Set user name
-            document.getElementById('userName').textContent = profile.name;
-            
-            // Load tasks
-            loadTasks();
-        }
+        return;
+    }
 
+            // Display employee name
+            document.getElementById('employeeName').textContent = profile.name;
+
+    // Load tasks
+    loadTasks();
+
+            // Add event listener for status filter
+            document.getElementById('statusFilter').addEventListener('change', loadTasks);
+}
+   
         // Load tasks
         async function loadTasks() {
-            const { data: { session } } = await supabase.auth.getSession();
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                const userId = session.user.id;
             
             // Get status filter value
             const statusFilter = document.getElementById('statusFilter').value;
             
             // Build query
-            let query = supabase
+                let query = supabase
                 .from('tasks')
                 .select(`
-                    id,
-                    title,
-                    description,
-                    due_date,
-                    status,
-                    progress,
+                        *,
                     categories (
                         name
                     )
                 `)
-                .eq('assigned_to', session.user.id);
+                    .eq('assigned_to', userId);
                 
             // Apply status filter if not 'all'
             if (statusFilter !== 'all') {
                 query = query.eq('status', statusFilter);
             }
             
-            // Execute query
             const { data: tasks, error } = await query;
             
-            if (error) {
+                if (error) throw error;
+                
+                const tasksTableBody = document.getElementById('tasksTableBody');
+                
+                if (tasks.length === 0) {
+                    tasksTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="py-4 text-center text-gray-500">
+                                No tasks found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+                tasksTableBody.innerHTML = tasks.map(task => `
+                    <tr class="border-t">
+                        <td class="py-4">
+                            <div class="font-medium text-gray-900">${task.title}</div>
+                            <div class="text-sm text-gray-500">${task.description}</div>
+                        </td>
+                        <td class="py-4">${task.categories?.name || 'Uncategorized'}</td>
+                        <td class="py-4">${formatDate(task.due_date)}</td>
+                        <td class="py-4">
+                            <span class="px-2 py-1 bg-${getStatusColor(task.status)}-100 text-${getStatusColor(task.status)}-800 rounded-full text-sm">
+                                ${formatStatus(task.status)}
+                            </span>
+                        </td>
+                        <td class="py-4">
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-blue-500 h-2.5 rounded-full" style="width: ${task.progress}%"></div>
+                            </div>
+                            <div class="text-sm text-gray-500 mt-1">${task.progress}%</div>
+                        </td>
+                        <td class="py-4">
+                            <a href="/employee/update_progress.html?id=${task.id}" class="text-blue-500 hover:text-blue-600">
+                                Update
+                            </a>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
                 console.error('Error loading tasks:', error);
                 document.getElementById('tasksTableBody').innerHTML = `
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-red-500">
+                        <td colspan="6" class="py-4 text-center text-red-500">
                             Error loading tasks. Please try again.
                         </td>
                     </tr>
                 `;
-                return;
             }
-            
-            // Display tasks
-            if (tasks.length === 0) {
-                document.getElementById('tasksTableBody').innerHTML = `
-                    <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                            No tasks found.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            // Render tasks
-            const tasksHTML = tasks.map(task => `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">${task.title}</div>
-                        <div class="text-sm text-gray-500">${task.description}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">${task.categories?.name || 'Uncategorized'}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">${formatDate(task.due_date)}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(task.status)}">
-                            ${formatStatus(task.status)}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="w-full bg-gray-200 rounded-full h-2.5">
-                            <div class="bg-primary h-2.5 rounded-full" style="width: ${task.progress}%"></div>
-                        </div>
-                        <div class="text-xs text-gray-500 mt-1">${task.progress}%</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <a href="update_progress.html?id=${task.id}" class="text-primary hover:text-primary-dark mr-3">Update</a>
-                    </td>
-                </tr>
-            `).join('');
-            
-            document.getElementById('tasksTableBody').innerHTML = tasksHTML;
         }
 
-        // Format date
+        // Helper functions
         function formatDate(dateString) {
             if (!dateString) return 'No due date';
-            const date = new Date(dateString);
-            return date.toLocaleDateString();
+            return new Date(dateString).toLocaleDateString();
         }
 
-        // Format status
         function formatStatus(status) {
             if (!status) return 'Unknown';
             return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
         }
 
-        // Get status class for styling
-        function getStatusClass(status) {
-            switch (status) {
-                case 'pending':
-                    return 'bg-yellow-100 text-yellow-800';
-                case 'in_progress':
-                    return 'bg-blue-100 text-blue-800';
-                case 'completed':
-                    return 'bg-green-100 text-green-800';
-                default:
-                    return 'bg-gray-100 text-gray-800';
-            }
+        function getStatusColor(status) {
+            const colors = {
+                'pending': 'yellow',
+                'in_progress': 'blue',
+                'completed': 'green',
+                'cancelled': 'red'
+            };
+            return colors[status] || 'gray';
         }
 
-        // Add event listener for status filter
-        document.getElementById('statusFilter').addEventListener('change', loadTasks);
-
-        // Initialize page
-        checkAuth();
+        // Initialize page when loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
     </script>
 </body>
 </html>

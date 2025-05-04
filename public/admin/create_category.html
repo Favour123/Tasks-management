@@ -1,97 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Category - Task Manager</title>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Create Category - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        'primary-dark': '#2563EB',
-                    }
-                }
-            }
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+      <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+      <script src="/js/auth.js"></script>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white shadow-md">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center">
-                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
+      <div class="flex h-screen">
+         <!-- Sidebar -->
+         <div class="w-64 bg-white shadow-lg">
+            <div class="p-4">
+               <h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
                         </div>
-                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <a href="view_all_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                All Tasks
-                            </a>
-                            <a href="assign_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+            <nav class="mt-6">
+               <a href="/admin/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                     />
+                  </svg>
+                  Dashboard
+               </a>
+               <a href="/admin/view_all_tasks.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                     />
+                  </svg>
+                  Tasks
+               </a>
+               <a href="/admin/assign_task.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                     />
+                  </svg>
                                 Assign Task
                             </a>
-                            <a href="create_category.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Create Category
-                            </a>
-                            <a href="export_report.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Export Report
-                            </a>
-                            <a href="archive_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Archive Task
-                            </a>
-                            <a href="activity_logs.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+               <a href="/admin/create_category.html" class="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                     />
+                  </svg>
+                  Categories
+               </a>
+               <a href="/admin/activity_logs.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                     />
+                  </svg>
                                 Activity Logs
                             </a>
+               <a href="/admin/export_report.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                     />
+                  </svg>
+                  Reports
+               </a>
+               <a href="#" onclick="signOut()" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Logout
+               </a>
+            </nav>
                         </div>
-                    </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
-                        <div class="ml-3 relative">
-                            <div class="flex items-center">
-                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
-                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
-                            </div>
-                        </div>
-                    </div>
+
+         <!-- Main Content -->
+         <div class="flex-1 overflow-auto">
+            <div class="p-8">
+               <!-- Header -->
+               <div class="flex justify-between items-center mb-8">
+                  <h2 class="text-3xl font-bold text-gray-800">Create Category</h2>
+                  <div class="flex items-center space-x-2">
+                     <span class="text-gray-700 font-medium" id="adminName">Loading...</span>
                 </div>
             </div>
-        </nav>
 
-        <!-- Main Content -->
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="px-4 py-5 sm:px-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">
-                            Create Category
-                        </h3>
-                    </div>
-                    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+               <!-- Category Form -->
+               <div class="bg-white rounded-lg shadow mb-8">
+                  <div class="p-6">
                         <form id="createCategoryForm" class="space-y-6">
                             <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">
-                                    Category Name
-                                </label>
-                                <input type="text" name="name" id="name" required
-                                    class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                           <label for="name" class="block text-sm font-medium text-gray-700"> Category Name </label>
+                           <input type="text" name="name" id="name" required class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                             </div>
 
                             <div>
-                                <label for="description" class="block text-sm font-medium text-gray-700">
-                                    Description
-                                </label>
-                                <textarea id="description" name="description" rows="3"
-                                    class="mt-1 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
+                           <label for="description" class="block text-sm font-medium text-gray-700"> Description </label>
+                           <textarea
+                              id="description"
+                              name="description"
+                              rows="3"
+                              class="mt-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-gray-300 rounded-md"
+                           ></textarea>
                             </div>
 
                             <div class="flex justify-end">
-                                <button type="submit"
-                                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                           <button
+                              type="submit"
+                              class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                           >
                                     Create Category
                                 </button>
                             </div>
@@ -100,36 +134,25 @@
                 </div>
 
                 <!-- Existing Categories -->
-                <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="px-4 py-5 sm:px-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">
-                            Existing Categories
-                        </h3>
-                    </div>
-                    <div class="border-t border-gray-200">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Name
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Description
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Created At
-                                    </th>
+               <div class="bg-white rounded-lg shadow">
+                  <div class="p-6">
+                     <h3 class="text-xl font-semibold text-gray-800 mb-4">Existing Categories</h3>
+                     <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                           <thead>
+                              <tr class="text-left text-gray-500">
+                                 <th class="pb-4">Name</th>
+                                 <th class="pb-4">Description</th>
+                                 <th class="pb-4">Created At</th>
                                 </tr>
                             </thead>
-                            <tbody id="categoriesTableBody" class="bg-white divide-y divide-gray-200">
-                                <!-- Categories will be loaded here -->
+                           <tbody id="categoriesTableBody">
                                 <tr>
-                                    <td colspan="3" class="px-6 py-4 text-center text-gray-500">
-                                        Loading categories...
-                                    </td>
+                                 <td colspan="3" class="py-4 text-center text-gray-500">Loading categories...</td>
                                 </tr>
                             </tbody>
                         </table>
+                     </div>
                     </div>
                 </div>
             </div>
@@ -137,34 +160,22 @@
     </div>
 
     <script>
-        // Initialize Supabase client
-        const supabaseUrl = 'your_supabase_url_here';
-        const supabaseAnonKey = 'your_supabase_anon_key_here';
-        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
-
         // Check authentication and load data
         async function initializePage() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (error || !session) {
-                window.location.href = '/login.html';
+            const session = await checkAuth();
+            if (!session) {
+               window.location.href = "/login.html";
                 return;
             }
             
-            // Get user profile
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('name, role')
-                .eq('id', session.user.id)
-                .single();
-                
-            if (profileError || profile.role !== 'admin') {
-                window.location.href = '/dashboard.html';
+            const profile = await getUserProfile();
+            if (!profile || profile.role !== "admin") {
+               window.location.href = "/login.html";
                 return;
             }
             
-            // Set user name
-            document.getElementById('userName').textContent = profile.name;
+            // Display admin name
+            document.getElementById("adminName").textContent = profile.name;
             
             // Load existing categories
             loadCategories();
@@ -172,107 +183,114 @@
 
         // Load categories
         async function loadCategories() {
-            const { data: categories, error } = await supabase
-                .from('categories')
-                .select('*')
-                .order('created_at', { ascending: false });
-                
-            if (error) {
-                console.error('Error loading categories:', error);
-                document.getElementById('categoriesTableBody').innerHTML = `
+            try {
+               const { data: categories, error } = await supabase.from("categories").select("*").order("created_at", { ascending: false });
+
+               if (error) throw error;
+
+               const categoriesTableBody = document.getElementById("categoriesTableBody");
+
+               if (categories.length === 0) {
+                  categoriesTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="3" class="py-4 text-center text-gray-500">
+                                No categories found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+               categoriesTableBody.innerHTML = categories
+                  .map(
+                     (category) => `
+                    <tr class="border-t">
+                        <td class="py-4">${category.name}</td>
+                        <td class="py-4">${category.description || "No description"}</td>
+                        <td class="py-4">${formatDate(category.created_at)}</td>
+                    </tr>
+                `
+                  )
+                  .join("");
+            } catch (error) {
+               console.error("Error loading categories:", error);
+               document.getElementById("categoriesTableBody").innerHTML = `
                     <tr>
-                        <td colspan="3" class="px-6 py-4 text-center text-red-500">
+                        <td colspan="3" class="py-4 text-center text-red-500">
                             Error loading categories. Please try again.
                         </td>
                     </tr>
                 `;
-                return;
             }
-            
-            if (categories.length === 0) {
-                document.getElementById('categoriesTableBody').innerHTML = `
-                    <tr>
-                        <td colspan="3" class="px-6 py-4 text-center text-gray-500">
-                            No categories found.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            // Render categories
-            const categoriesHTML = categories.map(category => `
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">${category.name}</div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="text-sm text-gray-500">${category.description || 'No description'}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">${formatDate(category.created_at)}</div>
-                    </td>
-                </tr>
-            `).join('');
-            
-            document.getElementById('categoriesTableBody').innerHTML = categoriesHTML;
         }
 
         // Format date
         function formatDate(dateString) {
-            if (!dateString) return 'N/A';
+            if (!dateString) return "N/A";
             const date = new Date(dateString);
             return date.toLocaleDateString();
         }
 
         // Handle form submission
-        document.getElementById('createCategoryForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const name = document.getElementById('name').value;
-            const description = document.getElementById('description').value;
-            
-            try {
-                // Create category
-                const { data: category, error: categoryError } = await supabase
-                    .from('categories')
-                    .insert([
-                        {
-                            name,
-                            description,
-                            created_at: new Date()
-                        }
-                    ])
-                    .select()
-                    .single();
-                    
-                if (categoryError) throw categoryError;
-                
-                // Log activity
-                const { error: logError } = await supabase
-                    .from('activity_logs')
-                    .insert([
-                        {
-                            user_id: (await supabase.auth.getSession()).data.session.user.id,
-                            action: 'create_category',
-                            details: `Created new category "${name}".`,
-                            created_at: new Date()
-                        }
-                    ]);
-                    
-                if (logError) throw logError;
-                
-                alert('Category created successfully!');
-                document.getElementById('createCategoryForm').reset();
-                loadCategories();
-            } catch (error) {
-                console.error('Error creating category:', error);
-                alert('Error creating category. Please try again.');
-            }
-        });
+         document.getElementById("createCategoryForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-        // Initialize page
-        initializePage();
+            const name = document.getElementById("name").value;
+            const description = document.getElementById("description").value;
+
+            try {
+               // Get current user's session
+               const {
+                  data: { session },
+                  error: sessionError,
+               } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
+               if (!session) throw new Error("No active session");
+
+        // Create category
+               const { data: category, error: categoryError } = await supabase
+                  .from("categories")
+            .insert([
+                {
+                    name,
+                    description,
+                        created_at: new Date(),
+                        updated_at: new Date(),
+                        created_by: session.user.id,
+                     },
+            ])
+            .select()
+            .single();
+
+        if (categoryError) throw categoryError;
+
+               // Log activity
+               const { error: logError } = await supabase.from("activity_logs").insert([
+                  {
+                     action: "category_created",
+                     details: {
+                        message: `Category "${name}" was created`,
+                        category_id: category.id,
+                     },
+                     created_at: new Date(),
+                     user_id: session.user.id,
+                     task_id: null, // Set to null since this is a category creation, not a task
+                  },
+               ]);
+
+               if (logError) throw logError;
+
+               alert("Category created successfully!");
+               document.getElementById("createCategoryForm").reset();
+        loadCategories();
+    } catch (error) {
+               console.error("Error creating category:", error);
+               alert("Error creating category. Please try again.");
+    }
+});
+
+         // Initialize page when loaded
+         document.addEventListener("DOMContentLoaded", initializePage);
     </script>
 </body>
 </html> 

@@ -1,272 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assign Task - Task Manager</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        'primary-dark': '#2563EB',
-                    }
-                }
-            }
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white shadow-md">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center">
-                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
-                        </div>
-                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <a href="view_all_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                All Tasks
-                            </a>
-                            <a href="assign_task.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Assign Task
-                            </a>
-                            <a href="create_category.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Create Category
-                            </a>
-                            <a href="export_report.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Export Report
-                            </a>
-                            <a href="archive_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Archive Task
-                            </a>
-                            <a href="activity_logs.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Activity Logs
-                            </a>
-                        </div>
-                    </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
-                        <div class="ml-3 relative">
-                            <div class="flex items-center">
-                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
-                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Assign Task - Admin Panel</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+      <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+      <script src="/js/auth.js"></script>
+   </head>
+   <body class="bg-gray-100">
+      <div class="flex h-screen">
+         <!-- Sidebar -->
+         <div class="w-64 bg-white shadow-lg">
+            <div class="p-4">
+               <h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
             </div>
-        </nav>
+            <nav class="mt-6">
+               <a href="/admin/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                     />
+                  </svg>
+                  Dashboard
+               </a>
+               <a href="/admin/view_all_tasks.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                     />
+                  </svg>
+                  Tasks
+               </a>
+               <a href="/admin/assign_task.html" class="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                     />
+                  </svg>
+                  Assign Task
+               </a>
+               <a href="/admin/create_category.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                     />
+                  </svg>
+                  Categories
+               </a>
+               <a href="/admin/activity_logs.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                     />
+                  </svg>
+                  Activity Logs
+               </a>
+               <a href="/admin/export_report.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                     />
+                  </svg>
+                  Reports
+               </a>
+               <a href="#" onclick="signOut()" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  Logout
+               </a>
+            </nav>
+         </div>
 
-        <!-- Main Content -->
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="px-4 py-5 sm:px-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">
-                            Assign Task
-                        </h3>
-                    </div>
-                    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
-                        <form id="assignTaskForm" class="space-y-6">
-                            <div>
-                                <label for="title" class="block text-sm font-medium text-gray-700">
-                                    Task Title
-                                </label>
-                                <input type="text" name="title" id="title" required
-                                    class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            </div>
+         <!-- Main Content -->
+         <div class="flex-1 overflow-auto">
+            <div class="p-8">
+               <!-- Header -->
+               <div class="flex justify-between items-center mb-8">
+                  <h2 class="text-3xl font-bold text-gray-800">Assign New Task</h2>
+                  <div class="flex items-center space-x-2">
+                     <span class="text-gray-700 font-medium" id="adminName">Loading...</span>
+                  </div>
+               </div>
 
-                            <div>
-                                <label for="description" class="block text-sm font-medium text-gray-700">
-                                    Description
-                                </label>
-                                <textarea id="description" name="description" rows="3" required
-                                    class="mt-1 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
-                            </div>
+               <!-- Task Form -->
+               <div class="bg-white rounded-lg shadow">
+                  <div class="p-6">
+                     <form id="assignTaskForm" class="space-y-6">
+                        <div>
+                           <label for="title" class="block text-sm font-medium text-gray-700"> Task Title </label>
+                           <input type="text" name="title" id="title" required class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                        </div>
 
-                            <div>
-                                <label for="category" class="block text-sm font-medium text-gray-700">
-                                    Category
-                                </label>
-                                <select id="category" name="category" required
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
-                                    <option value="">Select Category</option>
-                                    <!-- Categories will be loaded here -->
-                                </select>
-                            </div>
+                        <div>
+                           <label for="description" class="block text-sm font-medium text-gray-700"> Description </label>
+                           <textarea
+                              id="description"
+                              name="description"
+                              rows="3"
+                              required
+                              class="mt-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-gray-300 rounded-md"
+                           ></textarea>
+                        </div>
 
-                            <div>
-                                <label for="assignedTo" class="block text-sm font-medium text-gray-700">
-                                    Assign To
-                                </label>
-                                <select id="assignedTo" name="assignedTo" required
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
-                                    <option value="">Select Employee</option>
-                                    <!-- Employees will be loaded here -->
-                                </select>
-                            </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                           <div>
+                              <label for="category" class="block text-sm font-medium text-gray-700"> Category </label>
+                              <select
+                                 id="category"
+                                 name="category"
+                                 required
+                                 class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                              >
+                                 <option value="">Select Category</option>
+                                 <!-- Categories will be loaded here -->
+                              </select>
+                           </div>
 
-                            <div>
-                                <label for="dueDate" class="block text-sm font-medium text-gray-700">
-                                    Due Date
-                                </label>
-                                <input type="date" name="dueDate" id="dueDate" required
-                                    class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            </div>
+                           <div>
+                              <label for="assignedTo" class="block text-sm font-medium text-gray-700"> Assign To </label>
+                              <select
+                                 id="assignedTo"
+                                 name="assignedTo"
+                                 required
+                                 class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                              >
+                                 <option value="">Select Employee</option>
+                                 <!-- Employees will be loaded here -->
+                              </select>
+                           </div>
 
-                            <div class="flex justify-end">
-                                <button type="submit"
-                                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                                    Assign Task
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                           <div>
+                              <label for="dueDate" class="block text-sm font-medium text-gray-700"> Due Date </label>
+                              <input
+                                 type="date"
+                                 name="dueDate"
+                                 id="dueDate"
+                                 required
+                                 class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                              />
+                           </div>
+
+                           <div>
+                              <label for="priority" class="block text-sm font-medium text-gray-700"> Priority </label>
+                              <select
+                                 id="priority"
+                                 name="priority"
+                                 required
+                                 class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+                              >
+                                 <option value="1">Low</option>
+                                 <option value="2">Medium</option>
+                                 <option value="3">High</option>
+                                 <option value="4">Urgent</option>
+                              </select>
+                           </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                           <button
+                              type="submit"
+                              class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                           >
+                              Assign Task
+                           </button>
+                        </div>
+                     </form>
+                  </div>
+               </div>
             </div>
-        </div>
-    </div>
+         </div>
+      </div>
 
-    <script>
-        // Initialize Supabase client
-        const supabaseUrl = 'your_supabase_url_here';
-        const supabaseAnonKey = 'your_supabase_anon_key_here';
-        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+      <script>
+         // Check authentication and load data
+         async function initializePage() {
+            const session = await checkAuth();
+            if (!session) {
+               window.location.href = "/login.html";
+               return;
+            }
 
-        // Check authentication and load data
-        async function initializePage() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (error || !session) {
-                window.location.href = '/login.html';
-                return;
+            const profile = await getUserProfile();
+            if (!profile || profile.role !== "admin") {
+               window.location.href = "/login.html";
+               return;
             }
-            
-            // Get user profile
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('name, role')
-                .eq('id', session.user.id)
-                .single();
-                
-            if (profileError || profile.role !== 'admin') {
-                window.location.href = '/dashboard.html';
-                return;
-            }
-            
-            // Set user name
-            document.getElementById('userName').textContent = profile.name;
-            
+
+            // Display admin name
+            document.getElementById("adminName").textContent = profile.name;
+
             // Load categories and employees
             loadCategories();
             loadEmployees();
-        }
+         }
 
-        // Load categories
-        async function loadCategories() {
-            const { data: categories, error } = await supabase
-                .from('categories')
-                .select('id, name')
-                .order('name');
-                
-            if (error) {
-                console.error('Error loading categories:', error);
-                return;
-            }
-            
-            // Add categories to dropdown
-            const categorySelect = document.getElementById('category');
-            const categoryOptions = categories.map(category => 
-                `<option value="${category.id}">${category.name}</option>`
-            ).join('');
-            
-            categorySelect.innerHTML += categoryOptions;
-        }
-
-        // Load employees
-        async function loadEmployees() {
-            const { data: employees, error } = await supabase
-                .from('profiles')
-                .select('id, name')
-                .eq('role', 'employee')
-                .order('name');
-                
-            if (error) {
-                console.error('Error loading employees:', error);
-                return;
-            }
-            
-            // Add employees to dropdown
-            const employeeSelect = document.getElementById('assignedTo');
-            const employeeOptions = employees.map(employee => 
-                `<option value="${employee.id}">${employee.name}</option>`
-            ).join('');
-            
-            employeeSelect.innerHTML += employeeOptions;
-        }
-
-        // Handle form submission
-        document.getElementById('assignTaskForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const title = document.getElementById('title').value;
-            const description = document.getElementById('description').value;
-            const categoryId = document.getElementById('category').value;
-            const assignedTo = document.getElementById('assignedTo').value;
-            const dueDate = document.getElementById('dueDate').value;
-            
+         // Load categories
+         async function loadCategories() {
             try {
-                // Create task
-                const { data: task, error: taskError } = await supabase
-                    .from('tasks')
-                    .insert([
-                        {
-                            title,
-                            description,
-                            category_id: categoryId,
-                            assigned_to: assignedTo,
-                            due_date: dueDate,
-                            status: 'pending',
-                            progress: 0,
-                            created_at: new Date(),
-                            updated_at: new Date()
-                        }
-                    ])
-                    .select()
-                    .single();
-                    
-                if (taskError) throw taskError;
-                
-                // Log activity
-                const { error: logError } = await supabase
-                    .from('activity_logs')
-                    .insert([
-                        {
-                            task_id: task.id,
-                            user_id: (await supabase.auth.getSession()).data.session.user.id,
-                            action: 'create_task',
-                            details: `Created and assigned task "${title}" to employee.`,
-                            created_at: new Date()
-                        }
-                    ]);
-                    
-                if (logError) throw logError;
-                
-                alert('Task assigned successfully!');
-                window.location.href = 'view_all_tasks.html';
-            } catch (error) {
-                console.error('Error assigning task:', error);
-                alert('Error assigning task. Please try again.');
-            }
-        });
+               const { data: categories, error } = await supabase.from("categories").select("id, name").order("name");
 
-        // Initialize page
-        initializePage();
-    </script>
-</body>
-</html> 
+               if (error) throw error;
+
+               const categorySelect = document.getElementById("category");
+               categorySelect.innerHTML += categories.map((category) => `<option value="${category.id}">${category.name}</option>`).join("");
+            } catch (error) {
+               console.error("Error loading categories:", error);
+            }
+         }
+
+         // Load employees
+         async function loadEmployees() {
+            try {
+               const { data: employees, error } = await supabase.from("profiles").select("id, name").eq("role", "employee").order("name");
+
+               if (error) throw error;
+
+               const employeeSelect = document.getElementById("assignedTo");
+               employeeSelect.innerHTML += employees.map((employee) => `<option value="${employee.id}">${employee.name}</option>`).join("");
+            } catch (error) {
+               console.error("Error loading employees:", error);
+            }
+         }
+
+         // Handle form submission
+         document.getElementById("assignTaskForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById("title").value;
+            const description = document.getElementById("description").value;
+            const dueDate = document.getElementById("dueDate").value;
+            const priority = parseInt(document.getElementById("priority").value); // Convert to integer
+            const assignedTo = document.getElementById("assignedTo").value;
+            const categoryId = document.getElementById("category").value;
+
+            try {
+               // Get current user's session
+               const {
+                  data: { session },
+                  error: sessionError,
+               } = await supabase.auth.getSession();
+               if (sessionError) throw sessionError;
+               if (!session) throw new Error("No active session");
+
+               if (!categoryId) {
+        alert("Please select a category");
+        return;
+    }
+
+    console.log("Category ID:", categoryId); // Add this line
+
+               // Create task
+               const { data: task, error: taskError } = await supabase
+                  .from("tasks")
+                  .insert([
+                     {
+                        title,
+                        description,
+                        due_date: dueDate,
+                        priority: priority, // Now an integer
+                        status: "pending",
+                        created_at: new Date(),
+                        updated_at: new Date(),
+                        assigned_by: session.user.id,
+                        assigned_to: assignedTo,
+                        category_id: categoryId
+                     },
+                  ])
+                  .select()
+                  .single();
+
+               if (taskError) throw taskError;
+
+               // Log activity
+               const { error: logError } = await supabase.from("activity_logs").insert([
+                  {
+                     action: "task_created",
+                     details: {
+                        message: `Task "${title}" was created and assigned`,
+                        task_id: task.id,
+                     },
+                     created_at: new Date(),
+                     user_id: session.user.id,
+                     task_id: task.id,
+                  },
+               ]);
+
+               if (logError) throw logError;
+
+               alert("Task assigned successfully!");
+               document.getElementById("assignTaskForm").reset();
+            } catch (error) {
+               console.error("Error assigning task:", error);
+               alert("Error assigning task. Please try again.");
+            }
+         });
+
+         // Initialize page when loaded
+         document.addEventListener("DOMContentLoaded", initializePage);
+      </script>
+   </body>
+</html>

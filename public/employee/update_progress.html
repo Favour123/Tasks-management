@@ -3,79 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Progress - Task Manager</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Update Progress - Employee Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        'primary-dark': '#2563EB',
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/auth.js"></script>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white shadow-md">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center">
-                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-16 md:w-64 bg-white shadow-lg transition-all duration-300">
+            <div class="p-4">
+                <h1 class="text-2xl font-bold text-gray-800 hidden md:block">Employee Panel</h1>
                         </div>
-                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <a href="my_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                My Tasks
-                            </a>
-                            <a href="update_progress.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Update Progress
-                            </a>
-                            <a href="filter_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Filter Tasks
-                            </a>
-                            <a href="activity_logs.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Activity Logs
-                            </a>
+            <nav class="mt-6">
+                <a href="/employee/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span class="hidden md:inline">Dashboard</span>
+                </a>
+                <a href="/employee/my_tasks.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <span class="hidden md:inline">My Tasks</span>
+                </a>
+                <a href="/employee/update_progress.html" class="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="hidden md:inline">Update Progress</span>
+                </a>
+                <a href="/employee/filter_tasks.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                    </svg>
+                    <span class="hidden md:inline">Filter Tasks</span>
+                </a>
+                <a href="/employee/activity_logs.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <span class="hidden md:inline">Activity Logs</span>
+                </a>
+                <a href="#" onclick="signOut()" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    <span class="hidden md:inline">Logout</span>
+                </a>
+            </nav>
                         </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <div class="p-8">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Update Progress</h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-700 font-medium" id="employeeName">Loading...</span>
                     </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
-                        <div class="ml-3 relative">
-                            <div class="flex items-center">
-                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
-                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
+                </div>
+
+                <!-- Task Details -->
+                <div class="bg-white rounded-lg shadow mb-8">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Task Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Task Title</label>
+                                <p class="mt-1 text-gray-900" id="taskTitle">Loading...</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Category</label>
+                                <p class="mt-1 text-gray-900" id="taskCategory">Loading...</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Due Date</label>
+                                <p class="mt-1 text-gray-900" id="taskDueDate">Loading...</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Current Status</label>
+                                <p class="mt-1" id="taskStatus">Loading...</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </nav>
 
-        <!-- Main Content -->
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="px-4 py-5 sm:px-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="taskTitle">
-                            Loading task...
-                        </h3>
-                        <p class="mt-1 max-w-2xl text-sm text-gray-500" id="taskDescription">
-                            Loading description...
-                        </p>
-                    </div>
-                    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
-                        <form id="updateProgressForm" class="space-y-6">
+                <!-- Progress Update Form -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Update Progress</h3>
+                        <form id="progressForm" class="space-y-6">
                             <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700">
-                                    Status
-                                </label>
-                                <select id="status" name="status" required
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                <label for="progress" class="block text-sm font-medium text-gray-700">Progress (%)</label>
+                                <input type="range" id="progress" name="progress" min="0" max="100" step="1" 
+                                    class="mt-1 block w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>0%</span>
+                                    <span id="progressValue">50%</span>
+                                    <span>100%</span>
+            </div>
+                    </div>
+
+                            <div>
+                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                <select id="status" name="status" 
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                                     <option value="pending">Pending</option>
                                     <option value="in_progress">In Progress</option>
                                     <option value="completed">Completed</option>
@@ -83,24 +118,14 @@
                             </div>
 
                             <div>
-                                <label for="progress" class="block text-sm font-medium text-gray-700">
-                                    Progress (%)
-                                </label>
-                                <input type="number" name="progress" id="progress" min="0" max="100" required
-                                    class="mt-1 focus:ring-primary focus:border-primary block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
-                            </div>
-
-                            <div>
-                                <label for="comments" class="block text-sm font-medium text-gray-700">
-                                    Comments
-                                </label>
+                                <label for="comments" class="block text-sm font-medium text-gray-700">Comments</label>
                                 <textarea id="comments" name="comments" rows="3"
-                                    class="mt-1 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
                             </div>
 
                             <div class="flex justify-end">
                                 <button type="submit"
-                                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                     Update Progress
                                 </button>
                             </div>
@@ -112,130 +137,146 @@
     </div>
 
     <script>
-        // Initialize Supabase client
-        const supabaseUrl = 'your_supabase_url_here';
-        const supabaseAnonKey = 'your_supabase_anon_key_here';
-        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
-
-        // Get task ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const taskId = urlParams.get('id');
-
-        // Check authentication and load task
+        // Check authentication and load data
         async function initializePage() {
-            const { data: { session }, error } = await supabase.auth.getSession();
-            
-            if (error || !session) {
+            const session = await checkAuth();
+            if (!session) {
                 window.location.href = '/login.html';
                 return;
             }
             
-            // Get user profile
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('name, role')
-                .eq('id', session.user.id)
-                .single();
-                
-            if (profileError || profile.role !== 'employee') {
-                window.location.href = '/dashboard.html';
+            const profile = await getUserProfile();
+            if (!profile || profile.role !== 'employee') {
+                window.location.href = '/login.html';
                 return;
             }
             
-            // Set user name
-            document.getElementById('userName').textContent = profile.name;
-            
-            // Load task if ID is provided
-            if (taskId) {
-                loadTask(taskId);
-            } else {
-                window.location.href = 'my_tasks.html';
+            // Display employee name
+            document.getElementById('employeeName').textContent = profile.name;
+
+            // Get task ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const taskId = urlParams.get('id');
+
+            if (!taskId) {
+                window.location.href = '/employee/my_tasks.html';
+                return;
             }
+
+            // Load task details
+            loadTaskDetails(taskId);
+
+            // Add event listeners
+            document.getElementById('progress').addEventListener('input', function() {
+                document.getElementById('progressValue').textContent = this.value + '%';
+            });
+
+            document.getElementById('progressForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateTaskProgress(taskId);
+            });
         }
 
         // Load task details
-        async function loadTask(taskId) {
-            const { data: task, error } = await supabase
+        async function loadTaskDetails(taskId) {
+            try {
+                const { data: task, error } = await supabase
                 .from('tasks')
                 .select(`
-                    id,
-                    title,
-                    description,
-                    status,
-                    progress,
-                    assigned_to
+                        *,
+                        categories (
+                            name
+                        )
                 `)
                 .eq('id', taskId)
                 .single();
                 
-            if (error) {
-                console.error('Error loading task:', error);
-                alert('Error loading task. Please try again.');
-                window.location.href = 'my_tasks.html';
-                return;
+                if (error) throw error;
+
+                // Update task information
+                document.getElementById('taskTitle').textContent = task.title;
+                document.getElementById('taskCategory').textContent = task.categories?.name || 'Uncategorized';
+                document.getElementById('taskDueDate').textContent = formatDate(task.due_date);
+                document.getElementById('taskStatus').innerHTML = `
+                    <span class="px-2 py-1 bg-${getStatusColor(task.status)}-100 text-${getStatusColor(task.status)}-800 rounded-full text-sm">
+                        ${formatStatus(task.status)}
+                    </span>
+                `;
+
+                // Set form values
+                document.getElementById('progress').value = task.progress;
+                document.getElementById('progressValue').textContent = task.progress + '%';
+                document.getElementById('status').value = task.status;
+                document.getElementById('comments').value = task.comments || '';
+
+            } catch (error) {
+                console.error('Error loading task details:', error);
+                alert('Error loading task details. Please try again.');
+                window.location.href = '/employee/my_tasks.html';
             }
-            
-            // Check if task is assigned to current user
-            const { data: { session } } = await supabase.auth.getSession();
-            if (task.assigned_to !== session.user.id) {
-                alert('You are not authorized to update this task.');
-                window.location.href = 'my_tasks.html';
-                return;
-            }
-            
-            // Populate form with task data
-            document.getElementById('taskTitle').textContent = task.title;
-            document.getElementById('taskDescription').textContent = task.description;
-            document.getElementById('status').value = task.status;
-            document.getElementById('progress').value = task.progress;
         }
 
-        // Handle form submission
-        document.getElementById('updateProgressForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const status = document.getElementById('status').value;
-            const progress = parseInt(document.getElementById('progress').value);
-            const comments = document.getElementById('comments').value;
-            
+        // Update task progress
+        async function updateTaskProgress(taskId) {
             try {
-                // Update task progress
-                const { error: updateError } = await supabase
+                const progress = document.getElementById('progress').value;
+            const status = document.getElementById('status').value;
+            
+                const { error } = await supabase
                     .from('tasks')
                     .update({
-                        status,
-                        progress,
-                        updated_at: new Date()
+                        progress: parseInt(progress),
+                        status: status,
+                        updated_at: new Date().toISOString()
                     })
                     .eq('id', taskId);
                     
-                if (updateError) throw updateError;
+                if (error) throw error;
                 
                 // Log activity
-                const { error: logError } = await supabase
+                await supabase
                     .from('activity_logs')
-                    .insert([
-                        {
-                            task_id: taskId,
-                            user_id: (await supabase.auth.getSession()).data.session.user.id,
-                            action: 'update_progress',
-                            details: `Updated progress to ${progress}% and status to ${status}. ${comments ? 'Comments: ' + comments : ''}`,
-                            created_at: new Date()
+                    .insert({
+                        task_id: taskId,
+                        user_id: (await supabase.auth.getSession()).data.session.user.id,
+                        action: 'task_updated',
+                        details: {
+                            message: `Task progress updated to ${progress}% and status changed to ${status}`
                         }
-                    ]);
-                    
-                if (logError) throw logError;
+                    });
                 
                 alert('Progress updated successfully!');
-                window.location.href = 'my_tasks.html';
-            } catch (error) {
-                console.error('Error updating progress:', error);
-                alert('Error updating progress. Please try again.');
-            }
-        });
+                window.location.href = '/employee/my_tasks.html';
 
-        // Initialize page
-        initializePage();
+            } catch (error) {
+                console.error('Error updating task progress:', error);
+                alert('Error updating task progress. Please try again.');
+            }
+        }
+
+        // Helper functions
+        function formatDate(dateString) {
+            if (!dateString) return 'No due date';
+            return new Date(dateString).toLocaleDateString();
+        }
+
+        function formatStatus(status) {
+            if (!status) return 'Unknown';
+            return status.charAt(0).toUpperCase() + status.slice(1).replace('_', ' ');
+        }
+
+        function getStatusColor(status) {
+            const colors = {
+                'pending': 'yellow',
+                'in_progress': 'blue',
+                'completed': 'green',
+                'cancelled': 'red'
+            };
+            return colors[status] || 'gray';
+        }
+
+        // Initialize page when loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
     </script>
 </body>
 </html> 

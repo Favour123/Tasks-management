@@ -3,7 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager</title>
+    <title>Task Manager - Efficient Task Management System</title>
+    
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Task Manager - Efficient Task Management System">
+    <meta name="description" content="A powerful task management system for teams and individuals. Organize, track, and complete tasks efficiently with our intuitive platform.">
+    <meta name="keywords" content="task management, project management, team collaboration, task tracking, productivity tools">
+    <meta name="author" content="Task Manager">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./image/download.jpg">
+    <link rel="apple-touch-icon" href="./image/download.jpg">
+    
+  
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -28,13 +42,14 @@
     </div>
     <script>
         // Initialize Supabase client
-        const supabaseUrl = 'your_supabase_url_here';
-        const supabaseAnonKey = 'your_supabase_anon_key_here';
-        const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+        const supabaseUrl = 'https://yxqbajnucttwmcfhuzqg.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4cWJham51Y3R0d21jZmh1enFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjEzOTgsImV4cCI6MjA1OTU5NzM5OH0.44CBRDkAafGaQyM05OpnjjxEoSBq_HAlZFDsghRK7fQ';
+    
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
         // Check if user is logged in
         async function checkSession() {
-            const { data: { session }, error } = await supabase.auth.getSession();
+            const { data: { session }, error } = await supabaseClient.auth.getSession();
             if (session) {
                 window.location.href = '/dashboard.html';
             } else {
