@@ -5,80 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Archive Task - Task Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        'primary-dark': '#2563EB',
-                    }
-                }
-            }
-        }
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/js/auth.js"></script>
 </head>
 <body class="bg-gray-100">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white shadow-md">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center">
-                            <h1 class="text-xl font-bold text-primary">Task Manager</h1>
-                        </div>
-                        <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <a href="view_all_tasks.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                All Tasks
-                            </a>
-                            <a href="assign_task.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Assign Task
-                            </a>
-                            <a href="create_category.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Create Category
-                            </a>
-                            <a href="export_report.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Export Report
-                            </a>
-                            <a href="archive_task.html" class="border-primary text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Archive Task
-                            </a>
-                            <a href="activity_logs.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                                Activity Logs
-                            </a>
-                        </div>
-                    </div>
-                    <div class="hidden sm:ml-6 sm:flex sm:items-center">
-                        <div class="ml-3 relative">
-                            <div class="flex items-center">
-                                <span id="userName" class="text-gray-700 mr-4">Loading...</span>
-                                <a href="../logout.html" class="text-gray-500 hover:text-gray-700">Logout</a>
-                            </div>
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-lg">
+            <div class="p-4">
+                <h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
+            </div>
+            <nav class="mt-6">
+                <a href="/admin/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="/admin/view_all_tasks.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Tasks
+                </a>
+                <a href="/admin/assign_task.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    Assign Task
+                </a>
+                <a href="/admin/create_category.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    Categories
+                </a>
+                <a href="/admin/activity_logs.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Activity Logs
+                </a>
+                <a href="/admin/export_report.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Reports
+                </a>
+                <a href="/admin/archive_task.html" class="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                    </svg>
+                    Archive Task
+                </a>
+                <a href="#" onclick="signOut()" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Logout
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <div class="p-8">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold text-gray-800">Archive Task</h2>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-gray-700 font-medium" id="userName">Loading...</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </nav>
 
-        <!-- Main Content -->
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="px-4 py-5 sm:px-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">
-                            Archive Task
-                        </h3>
-                    </div>
-                    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+                <!-- Archive Task Form -->
+                <div class="bg-white rounded-lg shadow mb-8">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Archive New Task</h3>
                         <form id="archiveTaskForm" class="space-y-6">
                             <div>
                                 <label for="taskId" class="block text-sm font-medium text-gray-700">
                                     Task
                                 </label>
                                 <select id="taskId" name="taskId" required
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm rounded-md">
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                                     <option value="">Select Task</option>
                                     <!-- Tasks will be loaded here -->
                                 </select>
@@ -89,12 +101,12 @@
                                     Archive Reason
                                 </label>
                                 <textarea id="archiveReason" name="archiveReason" rows="3" required
-                                    class="mt-1 shadow-sm focus:ring-primary focus:border-primary block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
+                                    class="mt-1 shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border border-gray-300 rounded-md"></textarea>
                             </div>
 
                             <div class="flex justify-end">
                                 <button type="submit"
-                                    class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                     Archive Task
                                 </button>
                             </div>
@@ -103,42 +115,40 @@
                 </div>
 
                 <!-- Archived Tasks -->
-                <div class="mt-8 bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="px-4 py-5 sm:px-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">
-                            Archived Tasks
-                        </h3>
-                    </div>
-                    <div class="border-t border-gray-200">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Task
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Assigned To
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Archived By
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Archive Date
-                                    </th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Reason
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="archivedTasksTableBody" class="bg-white divide-y divide-gray-200">
-                                <!-- Archived tasks will be loaded here -->
-                                <tr>
-                                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                                        Loading archived tasks...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="bg-white rounded-lg shadow">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Archived Tasks</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Task
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Assigned To
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Archived By
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Archive Date
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Reason
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="archivedTasksTableBody" class="bg-white divide-y divide-gray-200">
+                                    <!-- Archived tasks will be loaded here -->
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                            Loading archived tasks...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -146,29 +156,17 @@
     </div>
 
     <script>
-        // Initialize Supabase client
-        const supabaseUrl = 'https://yxqbajnucttwmcfhuzqg.supabase.co';
-        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl4cWJham51Y3R0d21jZmh1enFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQwMjEzOTgsImV4cCI6MjA1OTU5NzM5OH0.44CBRDkAafGaQyM05OpnjjxEoSBq_HAlZFDsghRK7fQ'; 
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
-
         // Check authentication and load data
         async function initializePage() {
-            const { data: { session }, error } = await supabaseClient.auth.getSession();
-            
-            if (error || !session) {
+            const session = await checkAuth();
+            if (!session) {
                 window.location.href = '/login.html';
                 return;
             }
-            
-            // Get user profile
-            const { data: profile, error: profileError } = await supabaseClient
-                .from('profiles')
-                .select('name, role')
-                .eq('id', session.user.id)
-                .single();
-                
-            if (profileError || profile.role !== 'admin') {
-                window.location.href = '/dashboard.html';
+
+            const profile = await getUserProfile();
+            if (!profile || profile.role !== 'admin') {
+                window.location.href = '/login.html';
                 return;
             }
             
@@ -182,7 +180,7 @@
 
         // Load tasks for dropdown
         async function loadTasks() {
-            const { data: tasks, error } = await supabaseClient
+            const { data: tasks, error } = await supabase
                 .from('tasks')
                 .select(`
                     id,
@@ -208,7 +206,7 @@
 
         // Load archived tasks
         async function loadArchivedTasks() {
-            const { data: archivedTasks, error } = await supabaseClient
+            const { data: archivedTasks, error } = await supabase
                 .from('tasks')
                 .select(`
                     id,
@@ -300,10 +298,10 @@
             
             try {
                 // Get current user
-                const { data: { session } } = await supabaseClient.auth.getSession();
+                const { data: { session } } = await supabase.auth.getSession();
                 
                 // Archive task
-                const { error: archiveError } = await supabaseClient
+                const { error: archiveError } = await supabase
                     .from('tasks')
                     .update({
                         archived: true,
@@ -316,14 +314,16 @@
                 if (archiveError) throw archiveError;
                 
                 // Log activity
-                const { error: logError } = await supabaseClient
+                const { error: logError } = await supabase
                     .from('activity_logs')
                     .insert([
                         {
                             task_id: taskId,
                             user_id: session.user.id,
-                            action: 'archive_task',
-                            details: `Archived task. Reason: ${archiveReason}`,
+                            action: 'task_updated',
+                            details: {
+                                message: `Task archived. Reason: ${archiveReason}`
+                            },
                             created_at: new Date()
                         }
                     ]);
@@ -341,7 +341,7 @@
         });
 
         // Initialize page
-        initializePage();
+        document.addEventListener('DOMContentLoaded', initializePage);
     </script>
 </body>
 </html> 

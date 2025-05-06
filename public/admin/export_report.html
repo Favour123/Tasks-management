@@ -6,7 +6,11 @@
     <title>Export Report - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="/js/auth.js"></script>
+    <script src="/js/report_generator.js"></script>
+    <link rel="icon" type="image/png" href="../image/download.jpg" />
+      <link rel="apple-touch-icon" href="../image/download.jpg" />
 </head>
 <body class="bg-gray-100">
     <div class="flex h-screen">
@@ -51,6 +55,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
                     Reports
+                </a>
+                <a href="/admin/archive_task.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                    </svg>
+                    Archive Task
                 </a>
                 <a href="#" onclick="signOut()" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,8 +217,11 @@
         async function loadRecentExports() {
             try {
                 const { data: exports, error } = await supabase
-                    .from('report_exports')
-                    .select('*')
+                    .from('reports')
+                    .select(`
+                        *,
+                        profiles:generated_by (name)
+                    `)
                     .order('created_at', { ascending: false })
                     .limit(5);
                 
@@ -233,13 +246,13 @@
                         <td class="py-4">${exportItem.report_type}</td>
                         <td class="py-4">${exportItem.format.toUpperCase()}</td>
                         <td class="py-4">
-                            <span class="px-2 py-1 bg-${getStatusColor(exportItem.status)}-100 text-${getStatusColor(exportItem.status)}-800 rounded-full text-sm">
-                                ${exportItem.status}
+                            <span class="px-2 py-1 bg-${exportItem.file_path ? 'green' : 'yellow'}-100 text-${exportItem.file_path ? 'green' : 'yellow'}-800 rounded-full text-sm">
+                                ${exportItem.file_path ? 'Completed' : 'Processing'}
                             </span>
                         </td>
                         <td class="py-4">
-                            ${exportItem.status === 'completed' ? `
-                                <a href="${exportItem.download_url}" class="text-blue-500 hover:text-blue-600">
+                            ${exportItem.file_path ? `
+                                <a href="${exportItem.file_path}" class="text-blue-500 hover:text-blue-600">
                                     Download
                                 </a>
                             ` : '-'}
@@ -266,16 +279,17 @@
             const format = document.getElementById('taskReportFormat').value;
             
             try {
-                // Create report export record
+                // Create report record
                 const { data: exportItem, error } = await supabase
-                    .from('report_exports')
+                    .from('reports')
                     .insert([
                         {
                             report_type: `task_${reportType}`,
                             format,
-                            status: 'pending',
-                            created_at: new Date(),
-                            updated_at: new Date()
+                            start_date: new Date(),
+                            end_date: new Date(),
+                            generated_by: (await supabase.auth.getUser()).data.user.id,
+                            created_at: new Date()
                         }
                     ])
                     .select()
@@ -283,14 +297,21 @@
                     
                 if (error) throw error;
                 
+                // Generate the report
+                await generateReport(exportItem.id, `task_${reportType}`, format);
+                
                 // Log activity
                 const { error: logError } = await supabase
                     .from('activity_logs')
                     .insert([
                         {
-                            type: 'report_exported',
-                            description: `Task report (${reportType}) exported in ${format.toUpperCase()} format`,
-                            created_at: new Date()
+                            action: 'report_exported',
+                            details: {
+                                message: `Task report (${reportType}) exported in ${format.toUpperCase()} format`
+                            },
+                            created_at: new Date(),
+                            user_id: (await supabase.auth.getUser()).data.user.id,
+                            task_id: null
                         }
                     ]);
                     
@@ -313,16 +334,17 @@
             const format = document.getElementById('activityReportFormat').value;
             
             try {
-                // Create report export record
+                // Create report record
                 const { data: exportItem, error } = await supabase
-                    .from('report_exports')
+                    .from('reports')
                     .insert([
                         {
                             report_type: `activity_${period}`,
                             format,
-                            status: 'pending',
-                            created_at: new Date(),
-                            updated_at: new Date()
+                            start_date: new Date(),
+                            end_date: new Date(),
+                            generated_by: (await supabase.auth.getUser()).data.user.id,
+                            created_at: new Date()
                         }
                     ])
                     .select()
@@ -330,14 +352,21 @@
                     
                 if (error) throw error;
                 
+                // Generate the report
+                await generateReport(exportItem.id, `activity_${period}`, format);
+                
                 // Log activity
                 const { error: logError } = await supabase
                     .from('activity_logs')
                     .insert([
                         {
-                            type: 'report_exported',
-                            description: `Activity report (${period}) exported in ${format.toUpperCase()} format`,
-                            created_at: new Date()
+                            action: 'report_exported',
+                            details: {
+                                message: `Activity report (${period}) exported in ${format.toUpperCase()} format`
+                            },
+                            created_at: new Date(),
+                            user_id: (await supabase.auth.getUser()).data.user.id,
+                            task_id: null
                         }
                     ]);
                     

@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="/js/auth.js"></script>
+    <link rel="icon" type="image/png" href="../image/download.jpg" />
+      <link rel="apple-touch-icon" href="../image/download.jpg" />
 </head>
 <body class="bg-gray-100">
     <div class="flex h-screen">
@@ -237,8 +239,8 @@
                 await supabase
                     .from('activity_logs')
                     .insert({
-                        task_id: taskId,
-                        user_id: (await supabase.auth.getSession()).data.session.user.id,
+                            task_id: taskId,
+                            user_id: (await supabase.auth.getSession()).data.session.user.id,
                         action: 'task_updated',
                         details: {
                             message: `Task progress updated to ${progress}% and status changed to ${status}`

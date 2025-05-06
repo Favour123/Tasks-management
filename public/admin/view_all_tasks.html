@@ -7,6 +7,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="/js/auth.js"></script>
+    <link rel="icon" type="image/png" href="../image/download.jpg" />
+      <link rel="apple-touch-icon" href="../image/download.jpg" />
 </head>
 <body class="bg-gray-100">
     <div class="flex h-screen">
@@ -51,6 +53,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
                     Reports
+                </a>
+                <a href="/admin/archive_task.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                    </svg>
+                    Archive Task
                 </a>
                 <a href="#" onclick="signOut()" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,8 +138,8 @@
         async function loadTasks() {
             try {
                 const { data: tasks, error } = await supabase
-                    .from('tasks')
-                    .select(`
+        .from('tasks')
+        .select(`
                         *,
                         assigned_to:profiles!tasks_assigned_to_fkey(id, name),
                         assigned_by:profiles!tasks_assigned_by_fkey(id, name),
