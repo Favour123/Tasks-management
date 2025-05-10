@@ -8,15 +8,25 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="/js/auth.js"></script>
     <link rel="icon" type="image/png" href="../image/download.jpg" />
-      <link rel="apple-touch-icon" href="../image/download.jpg" />
+    <link rel="apple-touch-icon" href="../image/download.jpg" />
 </head>
 <body class="bg-gray-100">
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuButton" class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+
+    <!-- Overlay -->
+    <div id="overlay" class="hidden lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-16 md:w-64 bg-white shadow-lg transition-all duration-300">
+        <div id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="p-4">
                 <h1 class="text-2xl font-bold text-gray-800 hidden md:block">Employee Panel</h1>
-                        </div>
+            </div>
             <nav class="mt-6">
                 <a href="/employee/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
                     <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,64 +65,88 @@
                     <span class="hidden md:inline">Logout</span>
                 </a>
             </nav>
-            </div>
+        </div>
 
         <!-- Main Content -->
         <div class="flex-1 overflow-auto">
-            <div class="p-8">
+            <div class="p-4 lg:p-8">
                 <!-- Header -->
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">Filter Tasks</h2>
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 space-y-4 lg:space-y-0">
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">Filter Tasks</h2>
                     <div class="flex items-center space-x-2">
                         <span class="text-gray-700 font-medium" id="employeeName">Loading...</span>
                     </div>
                 </div>
 
-                <!-- Filters -->
+                <!-- Filter Form -->
                 <div class="bg-white rounded-lg shadow mb-8">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Filter Options</h3>
-                        <form id="filterForm" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-4 lg:p-6">
+                        <form id="filterForm" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                                    <select id="status" name="status"
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                    <option value="all">All Status</option>
+                                    <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                                    <select id="category" name="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                    <select id="status" name="status" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                        <option value="">All Status</option>
                                         <option value="pending">Pending</option>
                                         <option value="in_progress">In Progress</option>
                                         <option value="completed">Completed</option>
                                     </select>
                                 </div>
-
                                 <div>
-                                <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-                                    <select id="category" name="category"
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                    <option value="all">All Categories</option>
+                                    <label for="priority" class="block text-sm font-medium text-gray-700">Priority</label>
+                                    <select id="priority" name="priority" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                        <option value="">All Priorities</option>
+                                        <option value="1">Low</option>
+                                        <option value="2">Medium</option>
+                                        <option value="3">High</option>
+                                        <option value="4">Urgent</option>
                                     </select>
                                 </div>
-
                                 <div>
-                                <label for="dateRange" class="block text-sm font-medium text-gray-700">Date Range</label>
-                                <select id="dateRange" name="dateRange" 
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                    <option value="all">All Time</option>
-                                    <option value="today">Today</option>
-                                    <option value="week">This Week</option>
-                                    <option value="month">This Month</option>
-                                    </select>
+                                    <label for="dueDate" class="block text-sm font-medium text-gray-700">Due Date</label>
+                                    <input type="date" id="dueDate" name="dueDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end">
+                                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Apply Filters
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                <!-- Tasks Table -->
+                <!-- Filtered Tasks -->
                 <div class="bg-white rounded-lg shadow">
-                    <div class="p-6">
+                    <div class="p-4 lg:p-6">
                         <div class="overflow-x-auto">
                             <table class="min-w-full">
                                 <thead>
                                     <tr class="text-left text-gray-500">
+                                        <th class="pb-4">Title</th>
+                                        <th class="pb-4 hidden md:table-cell">Category</th>
+                                        <th class="pb-4 hidden md:table-cell">Due Date</th>
+                                        <th class="pb-4 hidden md:table-cell">Status</th>
+                                        <th class="pb-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="filteredTasksTableBody">
+                                    <tr>
+                                        <td colspan="5" class="py-4 text-center text-gray-500">Select filters and click "Apply Filters" to view tasks.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
                                         <th class="pb-4">Task</th>
                                         <th class="pb-4">Category</th>
                                         <th class="pb-4">Due Date</th>

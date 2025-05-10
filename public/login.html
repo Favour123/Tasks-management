@@ -19,8 +19,46 @@
     </script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="js/auth.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-gradient {
+            background: linear-gradient(135deg, #e0e7ff 0%, #f0fdfa 100%);
+        }
+        .input-group { position: relative; }
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 10;
+        }
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3B82F6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading .spinner {
+            display: inline-block;
+        }
+        .loading .button-text {
+            display: none;
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-gradient min-h-screen flex items-center justify-center">
     <div class="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-lg">
         <div>
             <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -35,18 +73,22 @@
                         class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" 
                         placeholder="Email address">
                 </div>
-                <div>
+                <div class="input-group">
                     <label for="password" class="sr-only">Password</label>
                     <input id="password" name="password" type="password" required 
-                        class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" 
+                        class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm pr-10 transition-shadow shadow-sm focus:shadow-lg" 
                         placeholder="Password">
+                    <button type="button" class="toggle-password" tabindex="-1" aria-label="Show password" onclick="togglePassword('password', this)">
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                    </button>
                 </div>
             </div>
 
             <div>
-                <button type="submit" 
+                <button type="submit" id="loginButton"
                     class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                    Sign in
+                    <span class="button-text">Sign in</span>
+                    <div class="spinner"></div>
                 </button>
             </div>
         </form>
@@ -61,6 +103,18 @@
     </div>
 
     <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('svg');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.956 9.956 0 012.293-3.95m1.414-1.414A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.956 9.956 0 01-4.043 5.197M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />';
+            } else {
+                input.type = 'password';
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             // Check if user is already logged in
             const session = await checkAuth();
@@ -72,15 +126,26 @@
             document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
+                const loginButton = document.getElementById('loginButton');
+                loginButton.classList.add('loading');
+                loginButton.disabled = true;
+                
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
 
-                const result = await signIn(email, password);
-                
-                if (result.success) {
-                    redirectBasedOnRole();
-                } else {
-                    alert('Login failed: ' + result.error);
+                try {
+                    const result = await signIn(email, password);
+                    
+                    if (result.success) {
+                        redirectBasedOnRole();
+                    } else {
+                        alert('Login failed: ' + result.error);
+                    }
+                } catch (error) {
+                    alert('An error occurred: ' + error.message);
+                } finally {
+                    loginButton.classList.remove('loading');
+                    loginButton.disabled = false;
                 }
             });
         });

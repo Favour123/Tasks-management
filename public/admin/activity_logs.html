@@ -11,12 +11,22 @@
       <link rel="apple-touch-icon" href="../image/download.jpg" />
 </head>
 <body class="bg-gray-100">
+      <!-- Mobile Menu Button -->
+      <button id="mobileMenuButton" class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+         </svg>
+      </button>
+
+      <!-- Overlay -->
+      <div id="overlay" class="hidden lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
       <div class="flex h-screen">
          <!-- Sidebar -->
-         <div class="w-64 bg-white shadow-lg">
+         <div id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="p-4">
                <h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
-                        </div>
+            </div>
             <nav class="mt-6">
                <a href="/admin/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
                   <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,18 +107,18 @@
                   Logout
                </a>
             </nav>
-                        </div>
+         </div>
 
          <!-- Main Content -->
          <div class="flex-1 overflow-auto">
-            <div class="p-8">
+            <div class="p-4 lg:p-8">
                <!-- Header -->
-               <div class="flex justify-between items-center mb-8">
-                  <h2 class="text-3xl font-bold text-gray-800">Activity Logs</h2>
+               <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 space-y-4 lg:space-y-0">
+                  <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">Activity Logs</h2>
                   <div class="flex items-center space-x-2">
                      <span class="text-gray-700 font-medium" id="adminName">Loading...</span>
-                </div>
-            </div>
+                  </div>
+               </div>
 
                <!-- Filters -->
                <div class="bg-white rounded-lg shadow mb-8">
@@ -162,30 +172,29 @@
 
                <!-- Activity Logs Table -->
                <div class="bg-white rounded-lg shadow">
-                  <div class="p-6">
+                  <div class="p-4 lg:p-6">
                      <div class="overflow-x-auto">
                         <table class="min-w-full">
                            <thead>
                               <tr class="text-left text-gray-500">
-                                 <th class="pb-4">Date & Time</th>
-                                 <th class="pb-4">User</th>
                                  <th class="pb-4">Action</th>
-                                 <th class="pb-4">Task</th>
-                                 <th class="pb-4">Details</th>
-                                </tr>
-                            </thead>
+                                 <th class="pb-4 hidden md:table-cell">User</th>
+                                 <th class="pb-4 hidden md:table-cell">Details</th>
+                                 <th class="pb-4 hidden md:table-cell">Timestamp</th>
+                              </tr>
+                           </thead>
                            <tbody id="activityLogsTableBody">
-                                <tr>
-                                 <td colspan="5" class="py-4 text-center text-gray-500">Loading activity logs...</td>
-                                </tr>
-                            </tbody>
+                              <tr>
+                                 <td colspan="4" class="py-4 text-center text-gray-500">Loading activity logs...</td>
+                              </tr>
+                           </tbody>
                         </table>
                      </div>
-                    </div>
-                </div>
+                  </div>
+               </div>
             </div>
-        </div>
-    </div>
+         </div>
+      </div>
 
     <script>
         // Check authentication and load data
@@ -299,7 +308,7 @@
                if (logs.length === 0) {
                   logsTableBody.innerHTML = `
                         <tr>
-                            <td colspan="5" class="py-4 text-center text-gray-500">
+                            <td colspan="4" class="py-4 text-center text-gray-500">
                                 No activity logs found.
                         </td>
                     </tr>
@@ -311,15 +320,10 @@
                   .map(
                      (log) => `
                     <tr class="border-t">
-                        <td class="py-4">${formatDateTime(log.created_at)}</td>
-                        <td class="py-4">${log.profiles?.name || "Unknown"}</td>
-                        <td class="py-4">
-                            <span class="px-2 py-1 bg-${getActivityColor(log.action)}-100 text-${getActivityColor(log.action)}-800 rounded-full text-sm">
-                                ${formatAction(log.action)}
-                            </span>
-                        </td>
-                        <td class="py-4">${log.tasks?.title || "N/A"}</td>
-                        <td class="py-4">${log.details?.message || "N/A"}</td>
+                        <td class="py-4">${formatAction(log.action)}</td>
+                        <td class="py-4 hidden md:table-cell">${log.profiles?.name || "Unknown"}</td>
+                        <td class="py-4 hidden md:table-cell">${log.details?.message || "N/A"}</td>
+                        <td class="py-4 hidden md:table-cell">${formatDateTime(log.created_at)}</td>
                     </tr>
                 `
                   )
@@ -328,7 +332,7 @@
                console.error("Error loading activity logs:", error);
                document.getElementById("activityLogsTableBody").innerHTML = `
                     <tr>
-                        <td colspan="5" class="py-4 text-center text-red-500">
+                        <td colspan="4" class="py-4 text-center text-red-500">
                             Error loading activity logs. Please try again.
                         </td>
                     </tr>
@@ -367,6 +371,19 @@
 
          // Initialize page when loaded
          document.addEventListener("DOMContentLoaded", initializePage);
+
+         // Add mobile menu functionality
+         const mobileMenuButton = document.getElementById('mobileMenuButton');
+         const sidebar = document.getElementById('sidebar');
+         const overlay = document.getElementById('overlay');
+
+         function toggleMobileMenu() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+         }
+
+         mobileMenuButton.addEventListener('click', toggleMobileMenu);
+         overlay.addEventListener('click', toggleMobileMenu);
     </script>
 </body>
 </html> 

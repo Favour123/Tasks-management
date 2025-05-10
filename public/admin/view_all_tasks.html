@@ -11,9 +11,19 @@
       <link rel="apple-touch-icon" href="../image/download.jpg" />
 </head>
 <body class="bg-gray-100">
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuButton" class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+       <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+       </svg>
+    </button>
+
+    <!-- Overlay -->
+    <div id="overlay" class="hidden lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-lg">
+        <div id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="p-4">
                 <h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
           </div>
@@ -71,44 +81,41 @@
 
         <!-- Main Content -->
         <div class="flex-1 overflow-auto">
-            <div class="p-8">
+            <div class="p-4 lg:p-8">
                 <!-- Header -->
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">All Tasks</h2>
-                    <div class="flex items-center space-x-4">
-                        <a href="/admin/assign_task.html" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                            New Task
-                        </a>
-                        <div class="flex items-center space-x-2">
-                            <span class="text-gray-700 font-medium" id="adminName">Loading...</span>
-                        </div>
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 space-y-4 lg:space-y-0">
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">All Tasks</h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-700 font-medium" id="adminName">Loading...</span>
                     </div>
                 </div>
 
     <!-- Tasks Table -->
                 <div class="bg-white rounded-lg shadow">
-                    <div class="p-6">
+                    <div class="p-4 lg:p-6">
         <div class="overflow-x-auto">
                             <table class="min-w-full">
                                 <thead>
                                     <tr class="text-left text-gray-500">
                                         <th class="pb-4">Title</th>
-                                        <th class="pb-4">Assigned To</th>
-                                        <th class="pb-4">Category</th>
-                                        <th class="pb-4">Due Date</th>
-                                        <th class="pb-4">Status</th>
-                                        <th class="pb-4">Priority</th>
-                                        <th class="pb-4">Assigned By</th>
-              </tr>
-            </thead>
-                                <tbody id="taskTableBody">
-                                    <!-- Tasks will be loaded here -->
-            </tbody>
-          </table>
+                                        <th class="pb-4 hidden md:table-cell">Category</th>
+                                        <th class="pb-4 hidden md:table-cell">Assigned To</th>
+                                        <th class="pb-4 hidden md:table-cell">Status</th>
+                                        <th class="pb-4 hidden md:table-cell">Due Date</th>
+                                        <th class="pb-4">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tasksTableBody">
+                                    <tr>
+                                        <td colspan="6" class="py-4 text-center text-gray-500">Loading tasks...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
   </div>
 
@@ -149,24 +156,22 @@
 
                 if (error) throw error;
 
-                const taskTableBody = document.getElementById('taskTableBody');
+                const taskTableBody = document.getElementById('tasksTableBody');
                 taskTableBody.innerHTML = tasks.map(task => `
                     <tr class="border-t">
                         <td class="py-4">${task.title}</td>
-                        <td class="py-4">${task.assigned_to?.name || 'Unassigned'}</td>
-                        <td class="py-4">${task.category?.name || 'N/A'}</td>
-                        <td class="py-4">${formatDate(task.due_date)}</td>
-                        <td class="py-4">
+                        <td class="py-4 hidden md:table-cell">${task.category?.name || 'N/A'}</td>
+                        <td class="py-4 hidden md:table-cell">${task.assigned_to?.name || 'Unassigned'}</td>
+                        <td class="py-4 hidden md:table-cell">
                             <span class="px-2 py-1 bg-${getStatusColor(task.status)}-100 text-${getStatusColor(task.status)}-800 rounded-full text-sm">
                                 ${task.status}
                             </span>
                         </td>
+                        <td class="py-4 hidden md:table-cell">${formatDate(task.due_date)}</td>
                         <td class="py-4">
-                            <span class="px-2 py-1 bg-${getPriorityColor(task.priority)}-100 text-${getPriorityColor(task.priority)}-800 rounded-full text-sm">
-                                ${getPriorityLabel(task.priority)}
-                            </span>
+                            <a href="/admin/edit_task.html?id=${task.id}" class="text-blue-500 mr-2">Edit</a>
+                            <a href="/admin/delete_task.html?id=${task.id}" class="text-red-500">Delete</a>
                         </td>
-                        <td class="py-4">${task.assigned_by?.name || 'N/A'}</td>
                     </tr>
                 `).join('');
             } catch (error) {
@@ -211,6 +216,19 @@
 
         // Initialize page when loaded
         document.addEventListener('DOMContentLoaded', initializePage);
+
+        // Add mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMobileMenu() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        overlay.addEventListener('click', toggleMobileMenu);
   </script>
 </body>
 </html>

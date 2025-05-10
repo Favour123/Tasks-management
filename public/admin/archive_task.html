@@ -7,11 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="/js/auth.js"></script>
+    <link rel="icon" type="image/png" href="../image/download.jpg" />
+    <link rel="apple-touch-icon" href="../image/download.jpg" />
 </head>
 <body class="bg-gray-100">
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuButton" class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+
+    <!-- Overlay -->
+    <div id="overlay" class="hidden lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-lg">
+        <div id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="p-4">
                 <h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
             </div>
@@ -69,20 +81,18 @@
 
         <!-- Main Content -->
         <div class="flex-1 overflow-auto">
-            <div class="p-8">
+            <div class="p-4 lg:p-8">
                 <!-- Header -->
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">Archive Task</h2>
-                    <div class="flex items-center space-x-4">
-                        <div class="flex items-center space-x-2">
-                            <span class="text-gray-700 font-medium" id="userName">Loading...</span>
-                        </div>
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 space-y-4 lg:space-y-0">
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">Archive Task</h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-gray-700 font-medium" id="adminName">Loading...</span>
                     </div>
                 </div>
 
                 <!-- Archive Task Form -->
                 <div class="bg-white rounded-lg shadow mb-8">
-                    <div class="p-6">
+                    <div class="p-4 lg:p-6">
                         <h3 class="text-xl font-semibold text-gray-800 mb-4">Archive New Task</h3>
                         <form id="archiveTaskForm" class="space-y-6">
                             <div>
@@ -116,35 +126,21 @@
 
                 <!-- Archived Tasks -->
                 <div class="bg-white rounded-lg shadow">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Archived Tasks</h3>
+                    <div class="p-4 lg:p-6">
+                        <h3 class="text-lg lg:text-xl font-semibold text-gray-800 mb-4">Archived Tasks</h3>
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
+                            <table class="min-w-full">
                                 <thead>
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Task
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Assigned To
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Archived By
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Archive Date
-                                        </th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Reason
-                                        </th>
+                                    <tr class="text-left text-gray-500">
+                                        <th class="pb-4">Task</th>
+                                        <th class="pb-4 hidden md:table-cell">Archived By</th>
+                                        <th class="pb-4 hidden md:table-cell">Archive Date</th>
+                                        <th class="pb-4 hidden md:table-cell">Reason</th>
                                     </tr>
                                 </thead>
-                                <tbody id="archivedTasksTableBody" class="bg-white divide-y divide-gray-200">
-                                    <!-- Archived tasks will be loaded here -->
+                                <tbody id="archivedTasksTableBody">
                                     <tr>
-                                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
-                                            Loading archived tasks...
-                                        </td>
+                                        <td colspan="4" class="py-4 text-center text-gray-500">Loading archived tasks...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -171,7 +167,7 @@
             }
             
             // Set user name
-            document.getElementById('userName').textContent = profile.name;
+            document.getElementById('adminName').textContent = profile.name;
             
             // Load tasks and archived tasks
             loadTasks();
@@ -228,7 +224,7 @@
                 console.error('Error loading archived tasks:', error);
                 document.getElementById('archivedTasksTableBody').innerHTML = `
                     <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-red-500">
+                        <td colspan="4" class="py-4 text-center text-red-500">
                             Error loading archived tasks. Please try again.
                         </td>
                     </tr>
@@ -239,7 +235,7 @@
             if (archivedTasks.length === 0) {
                 document.getElementById('archivedTasksTableBody').innerHTML = `
                     <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                        <td colspan="4" class="py-4 text-center text-gray-500">
                             No archived tasks found.
                         </td>
                     </tr>
@@ -250,19 +246,16 @@
             // Render archived tasks
             const archivedTasksHTML = archivedTasks.map(task => `
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="py-4">
                         <div class="text-sm font-medium text-gray-900">${task.title}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="py-4 hidden md:table-cell">
                         <div class="text-sm text-gray-500">${task.profiles?.name || 'Unassigned'}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-500">${task.archived_by_profile?.name || 'Unknown'}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td class="py-4 hidden md:table-cell">
                         <div class="text-sm text-gray-500">${formatDate(task.archive_date)}</div>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="py-4 hidden md:table-cell">
                         <div class="text-sm text-gray-500">${task.archive_reason || 'No reason provided'}</div>
                     </td>
                 </tr>
@@ -339,6 +332,19 @@
                 alert('Error archiving task. Please try again.');
             }
         });
+
+        // Add mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMobileMenu() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        overlay.addEventListener('click', toggleMobileMenu);
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', initializePage);

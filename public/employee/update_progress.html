@@ -8,15 +8,25 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="/js/auth.js"></script>
     <link rel="icon" type="image/png" href="../image/download.jpg" />
-      <link rel="apple-touch-icon" href="../image/download.jpg" />
+    <link rel="apple-touch-icon" href="../image/download.jpg" />
 </head>
 <body class="bg-gray-100">
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuButton" class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+
+    <!-- Overlay -->
+    <div id="overlay" class="hidden lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-16 md:w-64 bg-white shadow-lg transition-all duration-300">
+        <div id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="p-4">
                 <h1 class="text-2xl font-bold text-gray-800 hidden md:block">Employee Panel</h1>
-                        </div>
+            </div>
             <nav class="mt-6">
                 <a href="/employee/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
                     <svg class="w-5 h-5 md:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,14 +65,14 @@
                     <span class="hidden md:inline">Logout</span>
                 </a>
             </nav>
-                        </div>
+        </div>
 
         <!-- Main Content -->
         <div class="flex-1 overflow-auto">
-            <div class="p-8">
+            <div class="p-4 lg:p-8">
                 <!-- Header -->
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">Update Progress</h2>
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 space-y-4 lg:space-y-0">
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">Update Progress</h2>
                     <div class="flex items-center space-x-2">
                         <span class="text-gray-700 font-medium" id="employeeName">Loading...</span>
                     </div>
@@ -95,24 +105,29 @@
 
                 <!-- Progress Update Form -->
                 <div class="bg-white rounded-lg shadow">
-                    <div class="p-6">
+                    <div class="p-4 lg:p-6">
                         <h3 class="text-xl font-semibold text-gray-800 mb-4">Update Progress</h3>
                         <form id="progressForm" class="space-y-6">
                             <div>
-                                <label for="progress" class="block text-sm font-medium text-gray-700">Progress (%)</label>
-                                <input type="range" id="progress" name="progress" min="0" max="100" step="1" 
-                                    class="mt-1 block w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                                <label for="taskId" class="block text-sm font-medium text-gray-700">Task</label>
+                                <select id="taskId" name="taskId" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                    <option value="">Select Task</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="progress" class="block text-sm font-medium text-gray-700">Progress</label>
+                                <input type="range" id="progress" name="progress" min="0" max="100" step="5" value="0" class="mt-1 block w-full" />
                                 <div class="flex justify-between text-sm text-gray-500">
                                     <span>0%</span>
-                                    <span id="progressValue">50%</span>
+                                    <span id="progressValue">0%</span>
                                     <span>100%</span>
-            </div>
-                    </div>
+                                </div>
+                            </div>
 
                             <div>
                                 <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                                <select id="status" name="status" 
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <select id="status" name="status" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                                     <option value="pending">Pending</option>
                                     <option value="in_progress">In Progress</option>
                                     <option value="completed">Completed</option>
@@ -121,13 +136,11 @@
 
                             <div>
                                 <label for="comments" class="block text-sm font-medium text-gray-700">Comments</label>
-                                <textarea id="comments" name="comments" rows="3"
-                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                                <textarea id="comments" name="comments" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"></textarea>
                             </div>
 
                             <div class="flex justify-end">
-                                <button type="submit"
-                                    class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                     Update Progress
                                 </button>
                             </div>
@@ -206,6 +219,7 @@
                 `;
 
                 // Set form values
+                document.getElementById('taskId').value = task.id;
                 document.getElementById('progress').value = task.progress;
                 document.getElementById('progressValue').textContent = task.progress + '%';
                 document.getElementById('status').value = task.status;
@@ -276,6 +290,19 @@
             };
             return colors[status] || 'gray';
         }
+
+        // Add mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMobileMenu() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        overlay.addEventListener('click', toggleMobileMenu);
 
         // Initialize page when loaded
         document.addEventListener('DOMContentLoaded', initializePage);

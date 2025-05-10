@@ -10,15 +10,25 @@
     <script src="/js/auth.js"></script>
     <script src="/js/report_generator.js"></script>
     <link rel="icon" type="image/png" href="../image/download.jpg" />
-      <link rel="apple-touch-icon" href="../image/download.jpg" />
+    <link rel="apple-touch-icon" href="../image/download.jpg" />
 </head>
 <body class="bg-gray-100">
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuButton" class="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+    </button>
+
+    <!-- Overlay -->
+    <div id="overlay" class="hidden lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+
     <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-lg">
+        <div id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
             <div class="p-4">
                 <h1 class="text-2xl font-bold text-gray-800">Admin Panel</h1>
-                        </div>
+            </div>
             <nav class="mt-6">
                 <a href="/admin/dashboard.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -36,8 +46,8 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
-                                Assign Task
-                            </a>
+                    Assign Task
+                </a>
                 <a href="/admin/create_category.html" class="flex items-center px-4 py-2 text-gray-600 hover:bg-gray-100">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
@@ -48,8 +58,8 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
-                                Activity Logs
-                            </a>
+                    Activity Logs
+                </a>
                 <a href="/admin/export_report.html" class="flex items-center px-4 py-2 text-gray-700 bg-gray-100">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -69,121 +79,70 @@
                     Logout
                 </a>
             </nav>
-            </div>
+        </div>
 
         <!-- Main Content -->
         <div class="flex-1 overflow-auto">
-            <div class="p-8">
+            <div class="p-4 lg:p-8">
                 <!-- Header -->
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-800">Export Reports</h2>
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 space-y-4 lg:space-y-0">
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">Export Report</h2>
                     <div class="flex items-center space-x-2">
                         <span class="text-gray-700 font-medium" id="adminName">Loading...</span>
                     </div>
+                </div>
+
+                <!-- Report Form -->
+                <div class="bg-white rounded-lg shadow mb-8">
+                    <div class="p-4 lg:p-6">
+                        <form id="exportReportForm" class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
+                                    <input type="date" id="startDate" name="startDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+                                </div>
+                                <div>
+                                    <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
+                                    <input type="date" id="endDate" name="endDate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+                                </div>
                             </div>
 
-                <!-- Report Options -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <!-- Task Report -->
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Task Report</h3>
-                            <form id="taskReportForm" class="space-y-4">
-                            <div>
-                                    <label for="taskReportType" class="block text-sm font-medium text-gray-700">
-                                        Report Type
-                                </label>
-                                    <select id="taskReportType" name="taskReportType" required
-                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                        <option value="all">All Tasks</option>
-                                        <option value="completed">Completed Tasks</option>
-                                        <option value="pending">Pending Tasks</option>
-                                        <option value="overdue">Overdue Tasks</option>
-                                </select>
-                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label for="taskReportFormat" class="block text-sm font-medium text-gray-700">
-                                        Format
-                                    </label>
-                                    <select id="taskReportFormat" name="taskReportFormat" required
-                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                        <option value="csv">CSV</option>
+                                    <label for="reportType" class="block text-sm font-medium text-gray-700">Report Type</label>
+                                    <select id="reportType" name="reportType" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                        <option value="">Select Report Type</option>
+                                        <option value="tasks">Tasks Report</option>
+                                        <option value="activity">Activity Report</option>
+                                        <option value="performance">Performance Report</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="format" class="block text-sm font-medium text-gray-700">Export Format</label>
+                                    <select id="format" name="format" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                        <option value="">Select Format</option>
                                         <option value="pdf">PDF</option>
+                                        <option value="excel">Excel</option>
+                                        <option value="csv">CSV</option>
                                     </select>
                                 </div>
-                                <div class="flex justify-end">
-                                    <button type="submit"
-                                        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                        Export Task Report
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                                </div>
-
-                    <!-- Activity Report -->
-                    <div class="bg-white rounded-lg shadow">
-                        <div class="p-6">
-                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Activity Report</h3>
-                            <form id="activityReportForm" class="space-y-4">
-                                <div>
-                                    <label for="activityReportPeriod" class="block text-sm font-medium text-gray-700">
-                                        Time Period
-                                    </label>
-                                    <select id="activityReportPeriod" name="activityReportPeriod" required
-                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                        <option value="today">Today</option>
-                                        <option value="yesterday">Yesterday</option>
-                                        <option value="last_7_days">Last 7 Days</option>
-                                        <option value="last_30_days">Last 30 Days</option>
-                                        <option value="this_month">This Month</option>
-                                        <option value="last_month">Last Month</option>
-                                    </select>
-                                </div>
-                            <div>
-                                    <label for="activityReportFormat" class="block text-sm font-medium text-gray-700">
-                                        Format
-                                </label>
-                                    <select id="activityReportFormat" name="activityReportFormat" required
-                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                                    <option value="csv">CSV</option>
-                                    <option value="pdf">PDF</option>
-                                </select>
                             </div>
+
                             <div class="flex justify-end">
-                                <button type="submit"
-                                        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                        Export Activity Report
+                                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    Export Report
                                 </button>
                             </div>
                         </form>
-                        </div>
                     </div>
                 </div>
 
-                <!-- Recent Exports -->
+                <!-- Report Preview -->
                 <div class="bg-white rounded-lg shadow">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-gray-800 mb-4">Recent Exports</h3>
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full">
-                                <thead>
-                                    <tr class="text-left text-gray-500">
-                                        <th class="pb-4">Date</th>
-                                        <th class="pb-4">Report Type</th>
-                                        <th class="pb-4">Format</th>
-                                        <th class="pb-4">Status</th>
-                                        <th class="pb-4">Download</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="recentExportsTableBody">
-                                    <tr>
-                                        <td colspan="5" class="py-4 text-center text-gray-500">
-                                            Loading recent exports...
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    <div class="p-4 lg:p-6">
+                        <h3 class="text-lg lg:text-xl font-semibold text-gray-800 mb-4">Report Preview</h3>
+                        <div id="reportPreview" class="space-y-4">
+                            <p class="text-gray-500">Select report parameters and click "Export Report" to generate a preview.</p>
                         </div>
                     </div>
                 </div>
@@ -397,6 +356,19 @@
             };
             return colors[status] || 'gray';
         }
+
+        // Add mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMobileMenu() {
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        overlay.addEventListener('click', toggleMobileMenu);
 
         // Initialize page when loaded
         document.addEventListener('DOMContentLoaded', initializePage);
